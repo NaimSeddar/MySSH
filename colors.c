@@ -1,20 +1,11 @@
 #include "colors.h"
 
-void red(char *m)
+void grayBG()
 {
-    printf("%s%s%s\n", RED_C, m, RESET_C);
-}
-void green(char *m)
-{
-    printf("%s%s%s\n", GREEN_C, m, RESET_C);
+    printf("\033[40m");
 }
 
-void blue(char *m)
+void whiteBG()
 {
-    printf("%s%s%s\n", BLUE_C, m, RESET_C);
-}
-
-void white(char *m)
-{
-    printf("%s%s%s\n", WHITE_C, m, RESET_C);
+    printf("\033[47m");
 }

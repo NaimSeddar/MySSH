@@ -7,8 +7,5 @@
 #define WHITE_C "\033[1;39m"
 #define RESET_C "\033[0m"
 
-// COLOR(message)
-void RED(char *m);
-void GREEN(char *m);
-void BLUE(char *m);
-void WHITE(char *m);
+void grayBG();
+void whiteBG();

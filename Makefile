@@ -4,7 +4,7 @@ CFLAGS = -Wall -ansi -pedantic --std=c99
 OBJS = colors.o myls.o mysh.o
 
 myls: colors.o myls.o
-	gcc -o myls myls.o colors.o 
+	gcc -o myls colors.o myls.o 
 
 colors.o: colors.c colors.h
 	$(CC) $(CFLAGS) -c -o $@ $<
