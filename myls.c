@@ -5,10 +5,13 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/dir.h>
 #include <errno.h>
 #include <string.h>
 
 #define ERR -1
+
+#define str(x) #x
 
 char dirType(int type)
 {
@@ -23,7 +26,9 @@ char dirType(int type)
         break;
     case 10:
         res = 'l';
+        break;
     default:
+        res = type + '0';
         break;
     }
 
@@ -53,7 +58,7 @@ int main(int argv, char *argc[])
         strcpy(buffer, "/proc/");
         strcat(buffer, file->d_name);
         stat(buffer, &fileInfo);
-        printf("%c  %s  %d\n", dirType(file->d_type), buffer, fileInfo.st_mode);
+        printf("%c %o  %s\n", dirType(file->d_type), fileInfo.st_mode, buffer);
     }
 
     if (closedir(d) == ERR)
