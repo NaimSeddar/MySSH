@@ -10,15 +10,35 @@
 
 #define ERR -1
 
+char dirType(int type)
+{
+    char res = ' ';
+    switch (type)
+    {
+    case 4:
+        res = '-';
+        break;
+    case 8:
+        res = 'd';
+        break;
+    case 10:
+        res = 'l';
+    default:
+        break;
+    }
+
+    return res;
+}
+
 int main(int argv, char *argc[])
 {
     // char* getcwd(char *buf, size_t size)
     // char* getcwd(char *buf)
 
-    char buffer[1024];
-    char *path = getcwd(buffer, sizeof(buffer));
+    char buffer[1024] = "/proc/";
+    // char *path = getcwd(buffer, sizeof(buffer));
 
-    DIR *d = opendir(path);
+    DIR *d = opendir(buffer);
     struct dirent *file;
     struct stat fileInfo;
 
@@ -30,9 +50,10 @@ int main(int argv, char *argc[])
 
     while ((file = readdir(d)) != 0)
     {
+        strcpy(buffer, "/proc/");
         strcat(buffer, file->d_name);
         stat(buffer, &fileInfo);
-        printf("%d . %s / %o\n", file->d_type, file->d_name, fileInfo.st_mode);
+        printf("%c  %s  %d\n", dirType(file->d_type), buffer, fileInfo.st_mode);
     }
 
     if (closedir(d) == ERR)
