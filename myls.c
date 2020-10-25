@@ -1,35 +1,33 @@
 #include "colors.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
-#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define ERR -1
 
-#define str(x) #x
+static const char *rwx[] = {
+    "---", "--x", "-w-", "-wx",
+    "r--", "r-x", "rw-", "rwx"};
 
-char dirType(int type)
+char dirType(mode_t mode)
 {
     char res = ' ';
-    switch (type)
+
+    if (S_ISDIR(mode))
     {
-    case 4:
-        res = '-';
-        break;
-    case 8:
         res = 'd';
-        break;
-    case 10:
+    }
+    if (S_ISLNK(mode))
+    {
         res = 'l';
-        break;
-    default:
-        res = type + '0';
-        break;
+    }
+    else
+    {
+        res = '-';
     }
 
     return res;
@@ -42,6 +40,7 @@ int main(int argv, char *argc[])
 
     char buffer[1024] = "/proc/";
     // char *path = getcwd(buffer, sizeof(buffer));
+    char mode_str[10];
 
     DIR *d = opendir(buffer);
     struct dirent *file;
@@ -58,7 +57,9 @@ int main(int argv, char *argc[])
         strcpy(buffer, "/proc/");
         strcat(buffer, file->d_name);
         stat(buffer, &fileInfo);
-        printf("%c %o  %s\n", dirType(file->d_type), fileInfo.st_mode, buffer);
+        int statmod = fileInfo.st_mode & 0777;
+        printf("%c %s%s%s  %s\n", dirType(fileInfo.st_mode), rwx[(fileInfo.st_mode >> 6) & 7],
+               rwx[(fileInfo.st_mode >> 3) & 7], rwx[fileInfo.st_mode & 7], buffer);
     }
 
     if (closedir(d) == ERR)
