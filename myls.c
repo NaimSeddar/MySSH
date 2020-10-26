@@ -57,11 +57,24 @@ int main(int argv, char *argc[])
     // char* getcwd(char *buf, size_t size)
     // char* getcwd(char *buf)
 
+    int a = 0;
+    int r = 0;
+
     if (argv > 1)
     {
         for (int i = 1; i < argv; i++)
         {
-            printf("%s\n", argc[i]);
+            if (argc[i][0] == '-')
+            {
+                if (strchr(argc[i], 'a') != NULL)
+                {
+                    a++;
+                }
+                if (strchr(argc[i], 'r') != NULL || strchr(argc[i], 'R') != NULL)
+                {
+                    r++;
+                }
+            }
         }
     }
 
