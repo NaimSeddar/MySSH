@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <sys/dir.h>
+#include <time.h>
 #include "colors.h"
 
 #define ERR -1
@@ -56,7 +57,17 @@ int main(int argv, char *argc[])
     // char* getcwd(char *buf, size_t size)
     // char* getcwd(char *buf)
 
-    char buffer[1024] = "/proc/";
+    if (argv > 1)
+    {
+        for (int i = 1; i < argv; i++)
+        {
+            printf("%s\n", argc[i]);
+        }
+    }
+
+    char buffer[1024] = "./";
+    char path[1024];
+    strcpy(path, buffer);
     // char *path = getcwd(buffer, sizeof(buffer));
 
     struct dirent **files;
@@ -78,12 +89,17 @@ int main(int argv, char *argc[])
         exit(ERR);
     }
 
-    for (int i = 0; i < n; i++, strcpy(buffer, "/proc/"))
+    for (int i = 0; i < n; i++, strcpy(path, buffer))
     {
-        strcat(buffer, files[i]->d_name);
-        lstat(buffer, &fileInfo);
-        printf("%c%s%s%s %ld %s\n", dirType(fileInfo.st_mode), userperms(fileInfo.st_mode),
-               grpperms(fileInfo.st_mode), otherperms(fileInfo.st_mode), fileInfo.st_nlink, buffer);
+        strcat(path, files[i]->d_name);
+        lstat(path, &fileInfo);
+        // permissions
+        printf("%c%s%s%s %ld", dirType(fileInfo.st_mode), userperms(fileInfo.st_mode),
+               grpperms(fileInfo.st_mode), otherperms(fileInfo.st_mode), fileInfo.st_nlink);
+        // date
+        printf(" %7ld %.12s ", fileInfo.st_size, ctime(&fileInfo.st_mtime) + 4);
+        // fichier
+        printf("%s\n", path);
         printf(RESET_C);
     }
 
