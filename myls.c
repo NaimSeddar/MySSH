@@ -1,11 +1,11 @@
-#include "colors.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/dir.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <string.h>
+#include <sys/dir.h>
+#include "colors.h"
 
 #define ERR -1
 
@@ -13,20 +13,38 @@ static const char *rwx[] = {
     "---", "--x", "-w-", "-wx",
     "r--", "r-x", "rw-", "rwx"};
 
+const char *userperms(mode_t m)
+{
+    return rwx[(m >> 6) & 7];
+}
+
+const char *grpperms(mode_t m)
+{
+    return rwx[(m >> 3) & 7];
+}
+
+const char *otherperms(mode_t m)
+{
+    return rwx[m & 7];
+}
+
 char dirType(mode_t mode)
 {
     char res = ' ';
 
     if (S_ISDIR(mode))
     {
+        printf(RED_C);
         res = 'd';
     }
     else if (S_ISLNK(mode))
     {
+        printf(BLUE_C);
         res = 'l';
     }
     else
     {
+        printf(WHITE_C);
         res = '-';
     }
 
@@ -40,11 +58,11 @@ int main(int argv, char *argc[])
 
     char buffer[1024] = "/proc/";
     // char *path = getcwd(buffer, sizeof(buffer));
-    char mode_str[10];
 
-    DIR *d = opendir(buffer);
-    struct dirent *file;
+    struct dirent **files;
     struct stat fileInfo;
+    int n;
+    DIR *d = opendir(buffer);
 
     if (d == 0)
     {
@@ -52,14 +70,21 @@ int main(int argv, char *argc[])
         exit(1);
     }
 
-    while ((file = readdir(d)) != 0)
+    n = scandir(buffer, &files, 0, alphasort);
+
+    if (n == ERR)
     {
-        strcpy(buffer, "/proc/");
-        strcat(buffer, file->d_name);
+        perror("scandir");
+        exit(ERR);
+    }
+
+    for (int i = 0; i < n; i++, strcpy(buffer, "/proc/"))
+    {
+        strcat(buffer, files[i]->d_name);
         lstat(buffer, &fileInfo);
-        int statmod = fileInfo.st_mode & 0777;
-        printf("%c %s%s%s  %s\n", dirType(fileInfo.st_mode), rwx[(fileInfo.st_mode >> 6) & 7],
-               rwx[(fileInfo.st_mode >> 3) & 7], rwx[fileInfo.st_mode & 7], buffer);
+        printf("%c%s%s%s %ld %s\n", dirType(fileInfo.st_mode), userperms(fileInfo.st_mode),
+               grpperms(fileInfo.st_mode), otherperms(fileInfo.st_mode), fileInfo.st_nlink, buffer);
+        printf(RESET_C);
     }
 
     if (closedir(d) == ERR)

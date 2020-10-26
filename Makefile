@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -ansi -pedantic --std=c99
+CFLAGS = -Wall -ansi -pedantic --std=gnu99
 
 OBJS = colors.o myls.o mysh.o
 
