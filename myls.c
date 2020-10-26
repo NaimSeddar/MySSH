@@ -21,7 +21,7 @@ char dirType(mode_t mode)
     {
         res = 'd';
     }
-    if (S_ISLNK(mode))
+    else if (S_ISLNK(mode))
     {
         res = 'l';
     }
@@ -56,7 +56,7 @@ int main(int argv, char *argc[])
     {
         strcpy(buffer, "/proc/");
         strcat(buffer, file->d_name);
-        stat(buffer, &fileInfo);
+        lstat(buffer, &fileInfo);
         int statmod = fileInfo.st_mode & 0777;
         printf("%c %s%s%s  %s\n", dirType(fileInfo.st_mode), rwx[(fileInfo.st_mode >> 6) & 7],
                rwx[(fileInfo.st_mode >> 3) & 7], rwx[fileInfo.st_mode & 7], buffer);
