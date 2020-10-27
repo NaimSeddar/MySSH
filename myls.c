@@ -1,21 +1,6 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <sys/dir.h>
-#include <time.h>
-#include <errno.h>
-#include <ctype.h>
-#include "colors.h"
+#include "myls.h"
 
-#define ERR -1
-#define FAILEDEXEC 127
-#define MAX_DIR 256
-
-static const char *perms[] = {
+char *perms[] = {
     "---", "--x", "-w-", "-wx",
     "r--", "r-x", "rw-", "rwx"};
 
@@ -34,16 +19,16 @@ const char *otherperms(mode_t m)
     return perms[m & 7];
 }
 
-char dirType(mode_t mode)
+char dirType(mode_t m)
 {
     char res = ' ';
 
-    if (S_ISDIR(mode))
+    if (S_ISDIR(m))
     {
         printf(RED_C);
         res = 'd';
     }
-    else if (S_ISLNK(mode))
+    else if (S_ISLNK(m))
     {
         printf(BLUE_C);
         res = 'l';

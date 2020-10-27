@@ -15,6 +15,8 @@
 #define FAILEDEXEC 127
 #define MAX_DIR 256
 
+extern char *perms[];
+
 const char *userperms(mode_t m);
 
 const char *grpperms(mode_t m);
