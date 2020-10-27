@@ -61,9 +61,16 @@ void print_date(struct stat s)
     printf(" %7ld %.12s ", s.st_size, ctime(&s.st_mtime) + 4);
 }
 
+void print_user(struct stat s)
+{
+    struct passwd *p = getpwuid(s.st_uid);
+    printf(" %s", p->pw_name);
+}
+
 void print_line(struct stat s, char *name)
 {
     print_perms(s);
+    print_user(s);
     print_date(s);
     printf("%s\n", name);
     printf(RESET_C);
@@ -103,7 +110,7 @@ void myls(char *path, int a, int r)
         }
         strcat(fpath, files[i]->d_name);
         lstat(fpath, &fileInfo);
-        print_line(fileInfo, fpath);
+        print_line(fileInfo, files[i]->d_name);
         if (S_ISDIR(fileInfo.st_mode) && r && ((a && i > 1) || !a))
         {
             // printf(BLUE_C "%s\n" RESET_C, files[i]->d_name);
@@ -114,7 +121,9 @@ void myls(char *path, int a, int r)
         }
         free(files[i]);
     }
+
     free(files);
+
     for (int i = 0; i < nb_dir; i++)
     {
         printf("\n");
@@ -152,19 +161,20 @@ int main(int argv, char *argc[])
                 dir[nb_dir++] = argc[i];
             }
         }
-
-        if (nb_dir == 1)
+    }
+    if (nb_dir == 0)
+    {
+        if (r)
+            print_dirHeader("./");
+        myls("./", a, r);
+    }
+    else
+    {
+        for (int i = 0; i < nb_dir; i++)
         {
-            myls(dir[0], a, r);
-        }
-        else
-        {
-            for (int i = 0; i < nb_dir; i++)
-            {
-                print_dirHeader(dir[i]);
-                myls(dir[i], a, r);
-                printf("\n");
-            }
+            print_dirHeader(dir[i]);
+            myls(dir[i], a, r);
+            printf("\n");
         }
     }
 
