@@ -10,23 +10,23 @@
 
 #define ERR -1
 
-static const char *rwx[] = {
+static const char *perms[] = {
     "---", "--x", "-w-", "-wx",
     "r--", "r-x", "rw-", "rwx"};
 
 const char *userperms(mode_t m)
 {
-    return rwx[(m >> 6) & 7];
+    return perms[(m >> 6) & 7];
 }
 
 const char *grpperms(mode_t m)
 {
-    return rwx[(m >> 3) & 7];
+    return perms[(m >> 3) & 7];
 }
 
 const char *otherperms(mode_t m)
 {
-    return rwx[m & 7];
+    return perms[m & 7];
 }
 
 char dirType(mode_t mode)
@@ -50,6 +50,27 @@ char dirType(mode_t mode)
     }
 
     return res;
+}
+
+void print_perms(struct stat s)
+{
+    mode_t m = s.st_mode;
+    // permissions
+    printf("%c%s%s%s %ld", dirType(m), userperms(m), grpperms(m), otherperms(m), s.st_nlink);
+}
+
+void print_date(struct stat s)
+{
+    // date
+    printf(" %7ld %.12s ", s.st_size, ctime(&s.st_mtime) + 4);
+}
+
+void print_line(struct stat s, char *name)
+{
+    print_perms(s);
+    print_date(s);
+    printf("%s\n", name);
+    printf(RESET_C);
 }
 
 int main(int argv, char *argc[])
@@ -86,13 +107,6 @@ int main(int argv, char *argc[])
     struct dirent **files;
     struct stat fileInfo;
     int n;
-    DIR *d = opendir(buffer);
-
-    if (d == 0)
-    {
-        perror("Path");
-        exit(1);
-    }
 
     n = scandir(buffer, &files, 0, alphasort);
 
@@ -102,22 +116,16 @@ int main(int argv, char *argc[])
         exit(ERR);
     }
 
-    for (int i = 0; i < n; i++, strcpy(path, buffer))
+    for (int i = 0; i < n; i++)
     {
+        if (!a && files[i]->d_name[0] == '.')
+            continue;
+        strcpy(path, buffer);
         strcat(path, files[i]->d_name);
         lstat(path, &fileInfo);
-        // permissions
-        printf("%c%s%s%s %ld", dirType(fileInfo.st_mode), userperms(fileInfo.st_mode),
-               grpperms(fileInfo.st_mode), otherperms(fileInfo.st_mode), fileInfo.st_nlink);
-        // date
-        printf(" %7ld %.12s ", fileInfo.st_size, ctime(&fileInfo.st_mtime) + 4);
-        // fichier
-        printf("%s\n", path);
-        printf(RESET_C);
-    }
 
-    if (closedir(d) == ERR)
-        exit(ERR);
+        print_line(fileInfo, path);
+    }
 
     return 0;
 }
