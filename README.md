@@ -2,6 +2,9 @@
 Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 
 ## Executables
+### mysh
+TODO: Lister les besoins
+
 ### myls (ls -l)
 [x] Type du fichier  
 [x] Permissions  
