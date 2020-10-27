@@ -10,6 +10,8 @@
 
 #define ERR -1
 
+#define MAX_DIR 256
+
 static const char *perms[] = {
     "---", "--x", "-w-", "-wx",
     "r--", "r-x", "rw-", "rwx"};
@@ -69,17 +71,48 @@ void print_line(struct stat s, char *name)
 {
     print_perms(s);
     print_date(s);
-    printf("%s\n", name);
+    printf("%s\n\n", name);
     printf(RESET_C);
+}
+
+void myls(char *path, int a, int r)
+{
+    char fpath[1024];
+    strcpy(fpath, path);
+
+    struct dirent **files;
+    struct stat fileInfo;
+    int n;
+
+    n = scandir(path, &files, 0, alphasort);
+
+    if (n == ERR)
+    {
+        perror("scandir");
+        exit(ERR);
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        if (!a && files[i]->d_name[0] == '.')
+            continue;
+        strcpy(fpath, path);
+        strcat(fpath, files[i]->d_name);
+        lstat(fpath, &fileInfo);
+
+        print_line(fileInfo, fpath);
+    }
 }
 
 int main(int argv, char *argc[])
 {
-    // char* getcwd(char *buf, size_t size)
-    // char* getcwd(char *buf)
 
+    pid_t p;
+    int n, status;
     int a = 0;
     int r = 0;
+    char *dir[MAX_DIR];
+    int nb_dir = 0;
 
     if (argv > 1)
     {
@@ -96,35 +129,16 @@ int main(int argv, char *argc[])
                     r++;
                 }
             }
+            else
+            {
+                dir[nb_dir++] = argc[i];
+            }
         }
-    }
 
-    char buffer[1024] = "./";
-    char path[1024];
-    strcpy(path, buffer);
-    // char *path = getcwd(buffer, sizeof(buffer));
-
-    struct dirent **files;
-    struct stat fileInfo;
-    int n;
-
-    n = scandir(buffer, &files, 0, alphasort);
-
-    if (n == ERR)
-    {
-        perror("scandir");
-        exit(ERR);
-    }
-
-    for (int i = 0; i < n; i++)
-    {
-        if (!a && files[i]->d_name[0] == '.')
-            continue;
-        strcpy(path, buffer);
-        strcat(path, files[i]->d_name);
-        lstat(path, &fileInfo);
-
-        print_line(fileInfo, path);
+        for (int i = 0; i < nb_dir; i++)
+        {
+            printf("%s\n", dir[i]);
+        }
     }
 
     return 0;
