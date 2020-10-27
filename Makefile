@@ -9,7 +9,7 @@ myls: colors.o myls.o
 colors.o: colors.c colors.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-myls.o: myls.c
+myls.o: myls.c myls.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: clean
