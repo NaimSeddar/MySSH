@@ -67,10 +67,17 @@ void print_user(struct stat s)
     printf(" %s", p->pw_name);
 }
 
+void print_group(struct stat s)
+{
+    struct group *g = getgrgid(s.st_gid);
+    printf(" %s", g->gr_name);
+}
+
 void print_line(struct stat s, char *name)
 {
     print_perms(s);
     print_user(s);
+    print_group(s);
     print_date(s);
     printf("%s\n", name);
     printf(RESET_C);
