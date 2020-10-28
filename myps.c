@@ -31,8 +31,8 @@ int main()
         strcat(ppath, proc[i]->d_name);
         lstat(ppath, &procInfo);
         p = getpwuid(procInfo.st_uid);
-        printf("User: %-10s PID: %5s Dir: %s\n",
-               p->pw_name, proc[i]->d_name, ppath);
+        printf("User: %-10s PID: %5s Command: %s\n",
+               p->pw_name, proc[i]->d_name, p->pw_shell);
     }
 
     printf("Un 2 roues en 4 roues\n");
