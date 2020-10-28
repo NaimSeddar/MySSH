@@ -95,7 +95,7 @@ void myls(char *path, int a, int r)
     struct stat fileInfo;
     int n;
 
-    n = scandir(path, &files, 0, alphasort);
+    n = scandir(path, &files, NULL, alphasort);
 
     if (n == ERR)
     {
