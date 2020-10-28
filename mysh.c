@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
-
-#define BUFFER_SIZE 1024
-#define ERR -1
-#define FAILED_EXEC 127
+#include "mysh.h"
 
 /**
  * Réécriture de la fonction system() vu en cours.
@@ -60,9 +51,8 @@ int main(int argv, char *argc[])
 {
     if (argv > 1)
     {
-
-        // printf("Aucun argument n'est requis pour '%s'\n", argc[1]);
-        // exit(1);
+        printf("Aucun argument n'est requis pour '%s'\n", argc[1]);
+        exit(1);
     }
 
     char *buffer = malloc(BUFFER_SIZE * sizeof(char));

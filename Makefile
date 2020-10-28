@@ -3,6 +3,8 @@ CFLAGS = -Wall -ansi -pedantic --std=gnu99
 
 OBJS = colors.o myls.o mysh.o
 
+.PHONY: clean
+
 myls: colors.o myls.o
 	gcc -o myls colors.o myls.o
 
@@ -15,10 +17,9 @@ colors.o: colors.c colors.h
 myls.o: myls.c myls.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-mysh.o: mysh.c
+mysh.o: mysh.c mysh.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 	
-.PHONY: clean
 
 clean:
 	@rm -f *.o
