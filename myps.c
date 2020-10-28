@@ -3,11 +3,29 @@
 #include <ctype.h>
 #include <sys/dir.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <dirent.h>
 #include <pwd.h>
 #include <string.h>
 
 #define ERR -1
+
+void getstatus(char *pid)
+{
+    char filename[1024];
+    char cmd[1024];
+    int useless;
+    char state;
+    sprintf(filename, "/proc/%s/stat", pid);
+
+    FILE *f = fopen(filename, "r");
+
+    fscanf(f, "%d %s %c", &useless, cmd, &state);
+
+    printf("cmd: %-10s state: %c\n", cmd, state);
+
+    fclose(f);
+}
 
 int main()
 {
@@ -31,10 +49,10 @@ int main()
         strcat(ppath, proc[i]->d_name);
         lstat(ppath, &procInfo);
         p = getpwuid(procInfo.st_uid);
-        printf("User: %-10s PID: %5s Command: %s\n",
-               p->pw_name, proc[i]->d_name, p->pw_shell);
+        printf("User: %-10s PID: %5s ",
+               p->pw_name, proc[i]->d_name);
+        getstatus(proc[i]->d_name);
     }
 
-    printf("Un 2 roues en 4 roues\n");
     return 0;
 }

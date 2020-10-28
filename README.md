@@ -30,10 +30,14 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 
 ## *myps (ps aux)*
 ### Fonctionnalités :
-    [ ] User  
-    [ ] État processus  
-    [ ] PID  
-    [ ] Time  
+    [x] User  
+    [x] PID  
+    [ ] %CPU  
+    [ ] %MEM  
     [ ] VSZ  
     [ ] RRS  
     [ ] TTY  
+    [x] État processus  
+    [ ] Start  
+    [ ] Time  
+    [x] Command  
