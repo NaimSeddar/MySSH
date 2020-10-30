@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <pwd.h>
 #include <string.h>
+#include <time.h>
 
 #define ERR -1
 
@@ -15,16 +16,36 @@ void getstatus(char *pid)
     char filename[1024];
     char cmd[1024];
     int useless;
-    char state;
+    char state[8];
     sprintf(filename, "/proc/%s/stat", pid);
 
     FILE *f = fopen(filename, "r");
 
-    fscanf(f, "%d %s %c", &useless, cmd, &state);
+    fscanf(f, "%d %s %s", &useless, cmd, state);
 
-    printf("cmd: %-10s state: %c\n", cmd, state);
+    printf("status: %s ", state);
 
     fclose(f);
+}
+
+void getcmd(char *pid)
+{
+    char filename[1024];
+    char cmd[1024];
+    sprintf(filename, "/proc/%s/cmdline", pid);
+
+    FILE *f = fopen(filename, "r");
+
+    fscanf(f, "%s", cmd);
+
+    printf("cmd: %-10s ", cmd);
+
+    fclose(f);
+}
+
+void getstart(struct stat s)
+{
+    printf("start: %.5s ", ctime(&s.st_ctime) + 11);
 }
 
 int main()
@@ -52,6 +73,9 @@ int main()
         printf("User: %-10s PID: %5s ",
                p->pw_name, proc[i]->d_name);
         getstatus(proc[i]->d_name);
+        getcmd(proc[i]->d_name);
+        getstart(procInfo);
+        printf("\n");
     }
 
     return 0;
