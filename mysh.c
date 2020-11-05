@@ -1,14 +1,68 @@
 #include "mysh.h"
 
+char **cmd_split(char *str, const char delimiter)
+{
+    char **result = 0;
+    size_t count = 0;
+    char *tmp = str;
+    char *last_comma = 0;
+    char delim[2];
+    delim[0] = delimiter;
+    delim[1] = 0;
+
+    /* Count how many elements will be extracted. */
+    while (*tmp)
+    {
+        if (delimiter == *tmp)
+        {
+            count++;
+            last_comma = tmp;
+        }
+        tmp++;
+    }
+
+    /* Add space for trailing token. */
+    count += last_comma < (str + strlen(str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    count++;
+
+    result = malloc(sizeof(char *) * count);
+
+    if (result)
+    {
+        size_t idx = 0;
+        char *token = strtok(str, delim);
+
+        while (token)
+        {
+            if (idx >= count)
+                exit(-1);
+            *(result + idx++) = strdup(token);
+            token = strtok(0, delim);
+        }
+        *(result + idx) = 0;
+    }
+
+    return result;
+}
+
 /**
  * Réécriture de la fonction system() vu en cours.
- * Version moins lourde, basé sur la fonction execl. 
+ * Version moins lourde, basé sur la fonction execvp. 
  * @param command
  * */
-int systemV2(char *command)
+int systemV2(char **command)
 {
     int status;
     pid_t pid = fork();
+
+    // for (int i = 0; *(command + i); i++)
+    // {
+    //     printf("<%s> ", *(command + i));
+    // }
+    // printf("\n");
 
     if (pid == ERR)
     {
@@ -18,7 +72,14 @@ int systemV2(char *command)
 
     if (!pid)
     {
-        execl("/bin/sh", "sh", "-c", command, (const char *)0);
+        // printf("To exec: %s\n", command);
+        // execl("/bin/sh", "sh", "-c", command, (const char *)0);
+        execvp(*command, command);
+        while (*(command++))
+        {
+            free(*command);
+        }
+        free(command);
         exit(FAILED_EXEC);
     }
 
@@ -33,6 +94,25 @@ int systemV2(char *command)
     }
 
     return ERR;
+}
+
+void printprompt()
+{
+    char currpath[1024];
+    int len;
+
+    if (getcwd(currpath, sizeof(currpath)) == NULL)
+    {
+        perror("getcwd error");
+        exit(1);
+    }
+
+    len = strlen(currpath);
+    currpath[len] = '$';
+    currpath[len + 1] = ' ';
+
+    if (write(STDOUT_FILENO, currpath, strlen(currpath)) == ERR)
+        perror("Write"), exit(1);
 }
 
 /**
@@ -55,17 +135,23 @@ int main(int argv, char *argc[])
         exit(1);
     }
 
-    char *buffer = malloc(BUFFER_SIZE * sizeof(char));
+    char *buffer;
+    char **commands;
 
     for (;;)
     {
-        if (write(STDOUT_FILENO, "\033[0;35m > \033[0m", 15) == ERR)
-            perror("Write"), exit(1);
+        printprompt();
+        // printf("%s$ ", currpath);
+
+        buffer = malloc(BUFFER_SIZE * sizeof(char));
 
         if (read(STDIN_FILENO, buffer, 1024) == ERR)
             perror("Read"), exit(2);
 
-        if (strcmp(buffer, "exit\n") == 0)
+        // replace '\n' by '\0'
+        buffer[strlen(buffer) - 1] = '\0';
+
+        if (strncmp(buffer, "exit", 4) == 0)
         {
             // printf("strcmp: %d\n", strcmp(buffer, "exit"));
             free(buffer);
@@ -73,10 +159,19 @@ int main(int argv, char *argc[])
         }
         else
         {
+            commands = cmd_split(buffer, ';');
             // if "cd" --> chdir(arg)
-            systemV2(buffer);
+            // buffer = strtok(buffer, ';');
+            for (int i = 0; *(commands + i); i++)
+            {
+                // printf("<%s>\n", cmd_split(*(commands + i), ' ')[0]);
+                printf("status: %d\n", systemV2(cmd_split(*(commands + i), ' ')));
+                free(*(commands + i));
+            }
+            free(commands);
         }
-        clearBuffer(buffer);
+        free(buffer);
+        // clearBuffer(buffer);
     }
 
     return 0;

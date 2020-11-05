@@ -3,18 +3,19 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 
 ## Executables
 ## *mysh*
+### Commandes internes :  
+    [ ] Pouvoir faire un cd  
+    [ ] Commande "status"  
 ### Fonctionnalités :
     [ ] Enchainement de commande via les ";"  
     [ ] Application des && et ||  
     [ ] Wildcards  
-    [ ] Pouvoir faire un cd  
-    [ ] Commande interne "status"  
     [ ] Pipeliner bien comme il faut  
     [ ] Redirection vers ou depuis un fichier (>, >>, 2>, 2>>, >&, >>&, <)  
     [ ] Lancer un prog en background  
     [ ] Commande interne myjobs  
     [ ] Passer une commande de foreground à background (et inversement)  
-    [ ] Prendre en charge des variables (locale et d'environnement)  
+    [ ] Prendre en charge des variables (locale et d'environnement) 
 
 
 ## *myls (ls -l)*
