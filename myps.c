@@ -20,6 +20,8 @@ int getmemtotal()
 
     fscanf(f, "MemTotal: %d kb", &memtotal);
 
+    close(f);
+
     return memtotal;
 }
 
