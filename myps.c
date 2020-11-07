@@ -11,6 +11,18 @@
 
 #define ERR -1
 
+int getmemtotal()
+{
+    char buffer[1024];
+    int memtotal;
+
+    FILE *f = fopen("/proc/meminfo", "r");
+
+    fscanf(f, "MemTotal: %d kb", &memtotal);
+
+    return memtotal;
+}
+
 void getstatus(char *pid)
 {
     char filename[1024];
@@ -65,7 +77,7 @@ int main()
         exit(ERR);
     }
 
-    for (int i = 2; i < n && isdigit(*proc[i]->d_name); i++, strcpy(ppath, "/proc/"))
+    /*for (int i = 2; i < n && isdigit(*proc[i]->d_name); i++, strcpy(ppath, "/proc/"))
     {
         strcat(ppath, proc[i]->d_name);
         lstat(ppath, &procInfo);
@@ -76,7 +88,9 @@ int main()
         getcmd(proc[i]->d_name);
         getstart(procInfo);
         printf("\n");
-    }
+    }*/
+
+    printf("Memtotal: %d\n", getmemtotal());
 
     return 0;
 }
