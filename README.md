@@ -28,6 +28,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [x] Propriétaire (user) du fichier  
     [x] Propriétaire (group) du fichier  
     [ ] Nombre total de blocks systeme  
+    [ ] Couleurs pour chaque type de fichier  
 
 ## *myps (ps aux)*
 ### Fonctionnalités :
