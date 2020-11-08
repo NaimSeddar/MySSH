@@ -12,7 +12,22 @@
 
 #define ERR -1
 
+typedef struct procInfo
+{
+    char *user;
+    int pid;
+    float cpu;
+    float mem;
+    int vsz;
+    int rss;
+    char *tty;
+    char *stat;
+    char *start;
+    char *time;
+    char *command;
+} proc;
+
 int getmemtotal();
 void getstatus(char *pid);
-void getcmd(char *pid);
+void getcmd(char *pid, proc *p);
 void getstart(struct stat s);

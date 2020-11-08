@@ -31,7 +31,7 @@ void getstatus(char *pid)
     fclose(f);
 }
 
-void getcmd(char *pid)
+void getcmd(char *pid, proc *p)
 {
     char filename[1024];
     char cmd[1024];
@@ -50,7 +50,10 @@ void getcmd(char *pid)
     }
     cmd[i] = '\0';
 
-    printf("cmd: %s \n", cmd);
+    p->command = (char *)malloc(sizeof(char) * i);
+    strncpy(p->command, cmd, i);
+
+    // printf("cmd: %s \n", cmd);
 
     close(f);
 }
@@ -63,7 +66,7 @@ void getstart(struct stat s)
 int main()
 {
 
-    struct dirent **proc;
+    /*struct dirent **proc;
     struct stat procInfo;
     struct passwd *p;
     int n;
@@ -75,7 +78,7 @@ int main()
     {
         perror("scandir");
         exit(ERR);
-    }
+    }*/
 
     /*for (int i = 2; i < n && isdigit(*proc[i]->d_name); i++, strcpy(ppath, "/proc/"))
     {
@@ -90,8 +93,11 @@ int main()
         printf("\n");
     }*/
 
-    printf("Memtotal: %d\n", getmemtotal());
-    getcmd("7");
+    proc *p = malloc(sizeof(proc));
+
+    // printf("Memtotal: %d\n", getmemtotal());
+    getcmd("7", p);
+    printf("command: %s\n", p->command);
 
     return 0;
 }
