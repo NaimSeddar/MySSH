@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/dir.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
@@ -46,15 +47,21 @@ void getcmd(char *pid)
 {
     char filename[1024];
     char cmd[1024];
+    char c;
     sprintf(filename, "/proc/%s/cmdline", pid);
 
-    FILE *f = fopen(filename, "r");
+    int f = open(filename, O_RDONLY);
+    int i = 0;
+    while (read(f, &c, 1) > 0)
+    {
+        cmd[i] = (c == '\0' ? ' ' : c);
+        i++;
+    }
+    cmd[i] = '\0';
 
-    fscanf(f, "%s", cmd);
+    printf("cmd: %s \n", cmd);
 
-    printf("cmd: %-10s ", cmd);
-
-    fclose(f);
+    close(f);
 }
 
 void getstart(struct stat s)
@@ -93,6 +100,7 @@ int main()
     }*/
 
     printf("Memtotal: %d\n", getmemtotal());
+    getcmd("7");
 
     return 0;
 }
