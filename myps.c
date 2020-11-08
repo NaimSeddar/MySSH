@@ -1,16 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <sys/dir.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <dirent.h>
-#include <pwd.h>
-#include <string.h>
-#include <time.h>
-
-#define ERR -1
+#include "myps.h"
 
 int getmemtotal()
 {
@@ -48,10 +36,13 @@ void getcmd(char *pid)
     char filename[1024];
     char cmd[1024];
     char c;
-    sprintf(filename, "/proc/%s/cmdline", pid);
-
-    int f = open(filename, O_RDONLY);
     int i = 0;
+
+    sprintf(filename, "/proc/%s/cmdline", pid);
+    int f = open(filename, O_RDONLY);
+
+    // La commande et ses arguments sont séparés par '\0'
+    // On doit donc parcourir la chaine manuellement
     while (read(f, &c, 1) > 0)
     {
         cmd[i] = (c == '\0' ? ' ' : c);
