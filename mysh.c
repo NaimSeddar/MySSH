@@ -1,6 +1,6 @@
 #include "mysh.h"
 
-char **cmd_split(char *str, const char delimiter)
+char **str_split(char *str, const char delimiter)
 {
     char **result = 0;
     size_t count = 0;
@@ -159,13 +159,13 @@ int main(int argv, char *argc[])
         }
         else
         {
-            commands = cmd_split(buffer, ';');
+            commands = str_split(buffer, ';');
             // if "cd" --> chdir(arg)
             // buffer = strtok(buffer, ';');
             for (int i = 0; *(commands + i); i++)
             {
-                // printf("<%s>\n", cmd_split(*(commands + i), ' ')[0]);
-                printf("status: %d\n", systemV2(cmd_split(*(commands + i), ' ')));
+                // printf("<%s>\n", str_split(*(commands + i), ' ')[0]);
+                printf("status: %d\n", systemV2(str_split(*(commands + i), ' ')));
                 free(*(commands + i));
             }
             free(commands);
