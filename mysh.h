@@ -9,17 +9,9 @@
 #define ERR -1
 #define FAILED_EXEC 127
 
-char **cmd_split(char *str, const char delimiter);
-
 /**
- * Réécriture de la fonction system() vu en cours.
- * Version moins lourde, basé sur la fonction execl. 
+ * A better system(), saw in class.
+ * A lighter version base on execvp. 
  * @param command
  * */
 int systemV2(char **command);
-
-/**
- * Fonction vidant le buffer
- * @param buffer
- * */
-void clearBuffer(char *buffer);

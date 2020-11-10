@@ -11,8 +11,8 @@ myls: colors.o myls.o
 mysh: utils.o mysh.o 
 	gcc -o mysh utils.o mysh.o
 
-myps: myps.o
-	gcc -o myps myps.o
+myps: utils.o myps.o
+	gcc -o myps utils.o myps.o
 
 utils.o: utils.c utils.h
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -26,7 +26,7 @@ myls.o: myls.c myls.h
 mysh.o: mysh.c mysh.h utils.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 	
-myps.o: myps.c
+myps.o: myps.c myps.h utils.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:

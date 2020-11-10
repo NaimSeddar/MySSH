@@ -2,8 +2,8 @@
 #include "utils.h"
 
 /**
- * Réécriture de la fonction system() vu en cours.
- * Version moins lourde, basé sur la fonction execvp. 
+ * A better system(), saw in class.
+ * A lighter version base on execvp. 
  * @param command
  * */
 int systemV2(char **command)
@@ -68,18 +68,6 @@ void printprompt()
         perror("Write"), exit(1);
 }
 
-/**
- * Fonction vidant le buffer
- * @param buffer
- * */
-void clearBuffer(char *buffer)
-{
-    while (*buffer != '\0')
-    {
-        *(buffer++) = '\0';
-    }
-}
-
 int main(int argv, char *argc[])
 {
     if (argv > 1)
@@ -124,7 +112,6 @@ int main(int argv, char *argc[])
             free(commands);
         }
         free(buffer);
-        // clearBuffer(buffer);
     }
 
     return 0;

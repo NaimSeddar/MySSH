@@ -1,4 +1,5 @@
 #include "myps.h"
+#include "utils.h"
 
 int getmemtotal()
 {
@@ -62,10 +63,34 @@ void getstart(struct stat s)
     printf("start: %.5s ", ctime(&s.st_ctime) + 11);
 }
 
+void parse_status(proc *p)
+{
+    char filename[1024];
+    char *buffer;
+    char *seek;
+    int rss = 0;
+    int vsz = 0;
+
+    sprintf(filename, "/proc/%s/status", p->pid);
+
+    buffer = file_to_string(filename);
+
+    /* if we find the substring "VmRSS", then we cand extract his value */
+    if ((seek = strstr(buffer, "VmRSS")))
+        sscanf(seek, "VmRSS:\t%d ", &rss);
+    p->rss = rss;
+
+    if ((seek = strstr(buffer, "VmSize")))
+        sscanf(seek, "VmSize:\t%d ", &vsz);
+    p->vsz = vsz;
+
+    // printf("Erreur RSS <%d>\n", p->rss);
+}
+
 void print_proc(proc *p)
 {
-    printf("user: %-16s; pid: %8s; cmd: %s\n",
-           p->user, p->pid, p->command);
+    printf("user: %-16s; pid: %8s; RSS: %8d; VSZ: %8d; cmd: %s\n",
+           p->user, p->pid, p->rss, p->vsz, p->command);
 }
 
 int main()
@@ -95,20 +120,22 @@ int main()
         pswd = getpwuid(dirInfo.st_uid);
         p->user = pswd->pw_name;
         getcmd(p->pid, p);
-
-        /*strcat(ppath, dir[i]->d_name);
-        lstat(ppath, &procInfo);
-        pswd = getpwuid(procInfo.st_uid);
-        printf("User: %-10s PID: %5s ",
-               p->pw_name, proc[i]->d_name);
-        getstatus(proc[i]->d_name);
-        getcmd(proc[i]->d_name);
-        getstart(procInfo);
-        printf("\n");*/
+        parse_status(p);
+        // getstatus(p->pid);
+        // strcat(ppath, dir[i]->d_name);
+        // lstat(ppath, &procInfo);
+        // pswd = getpwuid(procInfo.st_uid);
+        // printf("User: %-10s PID: %5s ",
+        //        p->pw_name, proc[i]->d_name);
+        // getstatus(proc[i]->d_name);
+        // getcmd(proc[i]->d_name);
+        // getstart(procInfo);
+        // printf("\n");
         // printf("command: %s\n", p->command);
         print_proc(p);
+        free(p);
     }
-
+    // printf("%s\n", file_to_string("/proc/7/status"));
     // printf("Memtotal: %d\n", getmemtotal());
 
     return 0;

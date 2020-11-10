@@ -50,3 +50,25 @@ char **str_split(char *str, const char delimiter)
 
     return result;
 }
+
+/*
+ * File into string
+ */
+
+char *file_to_string(char *filename)
+{
+    int f = open(filename, O_RDONLY);
+    char *buffer = (char *)malloc(BUFFER_SIZE);
+
+    for (int i = 0; read(f, buffer + i, 1) > 0; i++)
+    {
+        if (i >= BUFFER_SIZE)
+        {
+            buffer = (char *)realloc(buffer, sizeof(buffer) + BUFFER_SIZE);
+        }
+    }
+
+    close(f);
+
+    return buffer;
+}
