@@ -1,63 +1,14 @@
 #include "myps.h"
 
-char **str_split(char *str, const char delimiter)
-{
-    char **result = 0;
-    size_t count = 0;
-    char *tmp = str;
-    char *last_comma = 0;
-    char delim[2];
-    delim[0] = delimiter;
-    delim[1] = 0;
-
-    /* Count how many elements will be extracted. */
-    while (*tmp)
-    {
-        if (delimiter == *tmp)
-        {
-            count++;
-            last_comma = tmp;
-        }
-        tmp++;
-    }
-
-    /* Add space for trailing token. */
-    count += last_comma < (str + strlen(str) - 1);
-
-    /* Add space for terminating null string so caller
-       knows where the list of returned strings ends. */
-    count++;
-
-    result = malloc(sizeof(char *) * count);
-
-    if (result)
-    {
-        size_t idx = 0;
-        char *token = strtok(str, delim);
-
-        while (token)
-        {
-            if (idx >= count)
-                exit(-1);
-            *(result + idx++) = strdup(token);
-            token = strtok(0, delim);
-        }
-        *(result + idx) = 0;
-    }
-
-    return result;
-}
-
 int getmemtotal()
 {
-    char buffer[1024];
     int memtotal;
 
     FILE *f = fopen("/proc/meminfo", "r");
 
     fscanf(f, "MemTotal: %d kb", &memtotal);
 
-    close(f);
+    fclose(f);
 
     return memtotal;
 }
@@ -111,41 +62,54 @@ void getstart(struct stat s)
     printf("start: %.5s ", ctime(&s.st_ctime) + 11);
 }
 
+void print_proc(proc *p)
+{
+    printf("user: %-16s; pid: %8s; cmd: %s\n",
+           p->user, p->pid, p->command);
+}
+
 int main()
 {
 
-    /*struct dirent **proc;
-    struct stat procInfo;
-    struct passwd *p;
+    struct dirent **dir;
+    struct stat dirInfo;
+    struct passwd *pswd;
     int n;
     char ppath[1024] = "/proc/";
+    proc *p;
 
-    n = scandir(ppath, &proc, NULL, alphasort);
+    n = scandir(ppath, &dir, NULL, alphasort);
 
     if (n == ERR)
     {
         perror("scandir");
         exit(ERR);
-    }*/
+    }
 
-    /*for (int i = 2; i < n && isdigit(*proc[i]->d_name); i++, strcpy(ppath, "/proc/"))
+    for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))
     {
-        strcat(ppath, proc[i]->d_name);
+        p = (proc *)malloc(sizeof(proc));
+        p->pid = dir[i]->d_name;
+        strcat(ppath, p->pid);
+        lstat(ppath, &dirInfo);
+        pswd = getpwuid(dirInfo.st_uid);
+        p->user = pswd->pw_name;
+        getcmd(p->pid, p);
+
+        /*strcat(ppath, dir[i]->d_name);
         lstat(ppath, &procInfo);
-        p = getpwuid(procInfo.st_uid);
+        pswd = getpwuid(procInfo.st_uid);
         printf("User: %-10s PID: %5s ",
                p->pw_name, proc[i]->d_name);
         getstatus(proc[i]->d_name);
         getcmd(proc[i]->d_name);
         getstart(procInfo);
-        printf("\n");
-    }*/
-
-    proc *p = malloc(sizeof(proc));
+        printf("\n");*/
+        // printf("command: %s\n", p->command);
+        print_proc(p);
+    }
 
     // printf("Memtotal: %d\n", getmemtotal());
-    getcmd("7", p);
-    printf("command: %s\n", p->command);
 
     return 0;
 }

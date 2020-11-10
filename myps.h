@@ -12,10 +12,10 @@
 
 #define ERR -1
 
-typedef struct procInfo
+typedef struct _proc
 {
     char *user;
-    int pid;
+    char *pid;
     float cpu;
     float mem;
     int vsz;
@@ -32,3 +32,4 @@ int getmemtotal();
 void getstatus(char *pid);
 void getcmd(char *pid, proc *p);
 void getstart(struct stat s);
+void print_proc(proc *p);
