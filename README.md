@@ -34,12 +34,12 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 ### Fonctionnalités :
     [x] User  
     [x] PID  
-    [ ] %CPU  
-    [ ] %MEM  
-    [ ] VSZ  
-    [ ] RRS  
-    [ ] TTY  
-    [x] État processus  
+    [x] %CPU  
+    [x] %MEM  
+    [x] VSZ  
+    [x] RRS  
+    [x] TTY  
+    [ ] État processus  
     [x] Start  
     [ ] Time  
     [x] Command  
