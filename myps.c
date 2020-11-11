@@ -14,11 +14,6 @@ int getmemtotal()
     return memtotal;
 }
 
-float getmem(proc *p)
-{
-    return
-}
-
 void getstatus(char *pid)
 {
     char filename[1024];
