@@ -1,6 +1,19 @@
 #include "myps.h"
 #include "utils.h"
 
+float getuptime()
+{
+    float uptime;
+
+    FILE *f = fopen("/proc/uptime", "r");
+
+    fscanf(f, "%f", &uptime);
+
+    fclose(f);
+
+    return uptime;
+}
+
 int getmemtotal()
 {
     int memtotal;
@@ -12,6 +25,11 @@ int getmemtotal()
     fclose(f);
 
     return memtotal;
+}
+
+void getmem(proc *p)
+{
+    p->mem = ((float)p->rss / (float)getmemtotal()) * 100;
 }
 
 void getstatus(char *pid)
@@ -96,13 +114,18 @@ void parse_stat(proc *p)
     char **values = str_split(buffer, ' ');
     size_t tmp;
 
-    // int tty = atof((values[6])) - 1024;
-    // int utime;
-    // int stime;
-    // int cutime;
-    // int cstime;
-    // int starttime;
+    /* Getting CPU %*/
+    long hertz = sysconf(_SC_CLK_TCK);
+    int utime = atof(values[13]);
+    int stime = atof(values[14]);
+    int cutime = atof(values[15]);
+    int cstime = atof(values[16]);
+    int start = atof(values[21]);
+    float s = getuptime() - (start / hertz);
+    int sum = utime + stime + cutime + cstime;
+    p->cpu = ((sum / hertz) / s) * 100;
 
+    /* Getting TTY */
     p->tty = (char *)malloc(sizeof(char) * 256);
     sprintf(buffer, "/proc/%s/fd/0", p->pid);
     if ((tmp = readlink(buffer, p->tty, (size_t)1024)) == -1 || strncmp(p->tty, "/dev/null", 9) == 0)
@@ -115,15 +138,14 @@ void parse_stat(proc *p)
         p->tty[tmp] = '\0';
         p->tty += 5;
     }
-    // printf("readlink %ld\n", tmp);
-    // sscanf(p->tty, "/dev/%s", p->tty);
+
     free(buffer);
 }
 
 void print_proc(proc *p)
 {
-    printf("%-8s %8s %8d %8d %8s %.5s %s\n",
-           p->user, p->pid, p->rss, p->vsz, p->tty, p->start, p->command);
+    printf("%-8s %8s %8.1f %8.1f %8d %8d %8s %.5s %s\n",
+           p->user, p->pid, p->cpu, p->mem, p->rss, p->vsz, p->tty, p->start, p->command);
 }
 
 int main()
@@ -145,8 +167,8 @@ int main()
     }
 
     /* print command header */
-    printf("%-8s %8s %8s %8s %8s %.5s %s\n",
-           "user", "pid", "rss", "vsz", "tty", "start", "command");
+    printf("%-8s %8s %8s %8s %8s %8s %8s %.5s %s\n",
+           "user", "pid", "%cpu", "%mem", "rss", "vsz", "tty", "start", "command");
 
     /* i starting at 2 in order to skip '.' and '..' */
     for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))
@@ -161,14 +183,15 @@ int main()
         p->user = pswd->pw_name;
 
         getcmd(p->pid, p);
-        parse_status(p);
         getstart(dirInfo, p);
-
+        parse_status(p);
+        getmem(p);
         parse_stat(p);
 
         print_proc(p);
 
         free(dir[i]);
+        // free(p->tty);
         free(p);
     }
     free(dir);
