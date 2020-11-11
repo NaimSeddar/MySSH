@@ -48,21 +48,16 @@ void getcmd(char *pid, proc *p)
         cmd[i] = (c == '\0' ? ' ' : c);
         i++;
     }
-    cmd[i] = '\0';
 
     p->command = (char *)malloc(sizeof(char) * i);
-    strncpy(p->command, cmd, i);
-
-    // printf("cmd: %s \n", cmd);
+    strncpy(p->command, cmd, i - 1);
 
     close(f);
 }
 
 void getstart(struct stat s, proc *p)
 {
-    // p->start = (char *)malloc(sizeof(char) * 5);
     p->start = (ctime(&s.st_ctime) + 11);
-    // printf("start: %.5s ", ctime(&s.st_ctime) + 11);
 }
 
 void parse_status(proc *p)
@@ -87,10 +82,48 @@ void parse_status(proc *p)
     p->vsz = vsz;
 }
 
+void parse_stat(proc *p)
+{
+
+    /*
+    *  si tty_nr == 0 -> "?"
+    *  sinon tty_nr - 1024 
+    */
+
+    char filename[1024];
+    sprintf(filename, "/proc/%s/stat", p->pid);
+    char *buffer = file_to_string(filename);
+    char **values = str_split(buffer, ' ');
+    size_t tmp;
+
+    // int tty = atof((values[6])) - 1024;
+    // int utime;
+    // int stime;
+    // int cutime;
+    // int cstime;
+    // int starttime;
+
+    p->tty = (char *)malloc(sizeof(char) * 256);
+    sprintf(buffer, "/proc/%s/fd/0", p->pid);
+    if ((tmp = readlink(buffer, p->tty, (size_t)1024)) == -1 || strncmp(p->tty, "/dev/null", 9) == 0)
+    {
+        free(p->tty);
+        p->tty = "?";
+    }
+    else
+    {
+        p->tty[tmp] = '\0';
+        p->tty += 5;
+    }
+    // printf("readlink %ld\n", tmp);
+    // sscanf(p->tty, "/dev/%s", p->tty);
+    free(buffer);
+}
+
 void print_proc(proc *p)
 {
-    printf("%-8s %8s %8d %8d %.5s %s\n",
-           p->user, p->pid, p->rss, p->vsz, p->start, p->command);
+    printf("%-8s %8s %8d %8d %8s %.5s %s\n",
+           p->user, p->pid, p->rss, p->vsz, p->tty, p->start, p->command);
 }
 
 int main()
@@ -112,8 +145,8 @@ int main()
     }
 
     /* print command header */
-    printf("%-8s %8s %8s %8s %.5s %s\n",
-           "user", "pid", "rss", "vsz", "start", "command");
+    printf("%-8s %8s %8s %8s %8s %.5s %s\n",
+           "user", "pid", "rss", "vsz", "tty", "start", "command");
 
     /* i starting at 2 in order to skip '.' and '..' */
     for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))
@@ -130,6 +163,8 @@ int main()
         getcmd(p->pid, p);
         parse_status(p);
         getstart(dirInfo, p);
+
+        parse_stat(p);
 
         print_proc(p);
 
