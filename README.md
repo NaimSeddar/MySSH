@@ -2,11 +2,10 @@
 Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 
 ## Executables
-## *mysh*
-### Commandes internes :  
-    [ ] Pouvoir faire un cd  
-    [ ] Commande "status"  
+## *mysh*  
 ### Fonctionnalités :
+    [ ] Changer de répertoire (cd)  
+    [ ] Commande "status" 
     [ ] Enchainement de commande via les ";"  
     [ ] Application des && et ||  
     [ ] Wildcards  
