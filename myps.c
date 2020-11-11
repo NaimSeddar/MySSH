@@ -1,5 +1,6 @@
 #include "myps.h"
 #include "utils.h"
+#include "colors.h"
 
 float getuptime()
 {
@@ -30,23 +31,6 @@ int getmemtotal()
 void getmem(proc *p)
 {
     p->mem = ((float)p->rss / (float)getmemtotal()) * 100;
-}
-
-void getstatus(char *pid)
-{
-    char filename[1024];
-    char cmd[1024];
-    int useless;
-    char state[8];
-    sprintf(filename, "/proc/%s/stat", pid);
-
-    FILE *f = fopen(filename, "r");
-
-    fscanf(f, "%d %s %s", &useless, cmd, state);
-
-    printf("status: %s ", state);
-
-    fclose(f);
 }
 
 void getcmd(char *pid, proc *p)
@@ -85,6 +69,8 @@ void parse_status(proc *p)
     char *seek;
     int rss = 0;
     int vsz = 0;
+    int threads = 0;
+    int lock = 0;
 
     sprintf(filename, "/proc/%s/status", p->pid);
 
@@ -98,21 +84,24 @@ void parse_status(proc *p)
     if ((seek = strstr(buffer, "VmSize")))
         sscanf(seek, "VmSize:\t%d ", &vsz);
     p->vsz = vsz;
+
+    if ((seek = strstr(buffer, "Threads")))
+        sscanf(seek, "Threads:\t%d ", &threads);
+    p->threads = threads;
+
+    if ((seek = strstr(buffer, "VmLck")))
+        sscanf(seek, "VmLck:\t%d ", &threads);
+    p->lock = lock;
 }
 
 void parse_stat(proc *p)
 {
-
-    /*
-    *  si tty_nr == 0 -> "?"
-    *  sinon tty_nr - 1024 
-    */
-
     char filename[1024];
     sprintf(filename, "/proc/%s/stat", p->pid);
     char *buffer = file_to_string(filename);
     char **values = str_split(buffer, ' ');
     size_t tmp;
+    int stat_cpt;
 
     /* Getting CPU %*/
     long hertz = sysconf(_SC_CLK_TCK);
@@ -123,6 +112,7 @@ void parse_stat(proc *p)
     int start = atof(values[21]);
     float s = getuptime() - (start / hertz);
     int sum = utime + stime + cutime + cstime;
+    p->time_cumul = s;
     p->cpu = ((sum / hertz) / s) * 100;
 
     /* Getting TTY */
@@ -139,18 +129,91 @@ void parse_stat(proc *p)
         p->tty += 5;
     }
 
+    /* Getting status */
+    p->stat = (char *)malloc(sizeof(char) * 8);
+    p->stat = values[2];
+    stat_cpt = 1;
+
+    /* 
+     * Check if high prioty ('<') or not ('N')
+     * Nice value range: -20(high) to 19(low)
+     */
+    if (values[18][0] == '-')
+    {
+        p->stat[stat_cpt++] = '<';
+    }
+    else if (values[18][0] == '1')
+    {
+        p->stat[stat_cpt++] = 'N';
+    }
+
+    /* Check if it has pages locked into memory */
+    if (p->lock)
+    {
+        p->stat[stat_cpt++] = 'L';
+    }
+
+    /* Check if it's a session leader */
+    if (strncmp(p->pid, values[5], strlen(p->pid)) == 0)
+    {
+        p->stat[stat_cpt++] = 's';
+    }
+
+    /* Check if it's multi threaded */
+    if (p->threads > 1)
+    {
+        p->stat[stat_cpt++] = 'l';
+    }
+
+    /* Check if it's in the foreground process group */
+    if (strncmp(p->pid, values[7], strlen(p->pid)) == 0)
+    {
+        p->stat[stat_cpt++] = '+';
+    }
+
+    p->stat[stat_cpt] = '\0';
+
     free(buffer);
+}
+
+void getcolor(proc *p)
+{
+    switch (p->stat[0])
+    {
+    case 'S':
+        printf(BLUE_C);
+        break;
+
+    case 'R':
+        printf(GREEN_C);
+        break;
+
+    case 'Z':
+        printf(RED_C);
+        break;
+
+    case 'D':
+        printf(WHITE_C);
+        break;
+
+    case 'T':
+        grayBG();
+        break;
+
+    default:
+        break;
+    }
 }
 
 void print_proc(proc *p)
 {
-    printf("%-8s %8s %8.1f %8.1f %8d %8d %8s %.5s %s\n",
-           p->user, p->pid, p->cpu, p->mem, p->rss, p->vsz, p->tty, p->start, p->command);
+    getcolor(p);
+    printf("%-8s %8s %8.1f %8.1f %8d %8d %8s %8s %.5s %.5s %s %s\n",
+           p->user, p->pid, p->cpu, p->mem, p->rss, p->vsz, p->tty, p->stat, p->start, p->time, p->command, RESET_C);
 }
 
 int main()
 {
-
     struct dirent **dir;
     struct stat dirInfo;
     struct passwd *pswd;
@@ -167,8 +230,8 @@ int main()
     }
 
     /* print command header */
-    printf("%-8s %8s %8s %8s %8s %8s %8s %.5s %s\n",
-           "user", "pid", "%cpu", "%mem", "rss", "vsz", "tty", "start", "command");
+    printf("%-8s %8s %8s %8s %8s %8s %8s %8s %.5s %.4s %s\n",
+           "USER", "PID", "%CPU", "%MEM", "RSS", "VSZ", "TTY", "STAT", "START", "TIME", "COMMAND");
 
     /* i starting at 2 in order to skip '.' and '..' */
     for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))
@@ -187,6 +250,12 @@ int main()
         parse_status(p);
         getmem(p);
         parse_stat(p);
+        double t = p->time_cumul;
+        int secs = t / sysconf(_SC_CLK_TCK);
+        int mins = secs == 0 ? 0 : 60 / (t - (double)secs);
+        int hours = mins == 0 ? 0 : 60 / (t - (double)mins);
+        sprintf(p->time, "%02d:%02d", mins, secs);
+        // p->time = (ctime(&dirInfo.st_mtime) + 11);
 
         print_proc(p);
 

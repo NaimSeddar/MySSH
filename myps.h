@@ -25,6 +25,9 @@ typedef struct _proc
     char *start;
     char *time;
     char *command;
+    int threads;
+    int lock;
+    int time_cumul;
 } proc;
 
 char **str_split(char *str, const char delimiter);

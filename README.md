@@ -38,7 +38,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [x] VSZ  
     [x] RRS  
     [x] TTY  
-    [ ] État processus  
+    [x] État processus  
     [x] Start  
-    [ ] Time  
+    [x] Time  
     [x] Command  
