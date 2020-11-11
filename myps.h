@@ -31,5 +31,5 @@ char **str_split(char *str, const char delimiter);
 int getmemtotal();
 void getstatus(char *pid);
 void getcmd(char *pid, proc *p);
-void getstart(struct stat s);
+void getstart(struct stat s, proc *p);
 void print_proc(proc *p);

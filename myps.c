@@ -14,6 +14,11 @@ int getmemtotal()
     return memtotal;
 }
 
+float getmem(proc *p)
+{
+    return
+}
+
 void getstatus(char *pid)
 {
     char filename[1024];
@@ -58,9 +63,11 @@ void getcmd(char *pid, proc *p)
     close(f);
 }
 
-void getstart(struct stat s)
+void getstart(struct stat s, proc *p)
 {
-    printf("start: %.5s ", ctime(&s.st_ctime) + 11);
+    // p->start = (char *)malloc(sizeof(char) * 5);
+    p->start = (ctime(&s.st_ctime) + 11);
+    // printf("start: %.5s ", ctime(&s.st_ctime) + 11);
 }
 
 void parse_status(proc *p)
@@ -83,14 +90,12 @@ void parse_status(proc *p)
     if ((seek = strstr(buffer, "VmSize")))
         sscanf(seek, "VmSize:\t%d ", &vsz);
     p->vsz = vsz;
-
-    // printf("Erreur RSS <%d>\n", p->rss);
 }
 
 void print_proc(proc *p)
 {
-    printf("user: %-16s; pid: %8s; RSS: %8d; VSZ: %8d; cmd: %s\n",
-           p->user, p->pid, p->rss, p->vsz, p->command);
+    printf("%-8s %8s %8d %8d %.5s %s\n",
+           p->user, p->pid, p->rss, p->vsz, p->start, p->command);
 }
 
 int main()
@@ -111,32 +116,32 @@ int main()
         exit(ERR);
     }
 
+    /* print command header */
+    printf("%-8s %8s %8s %8s %.5s %s\n",
+           "user", "pid", "rss", "vsz", "start", "command");
+
+    /* i starting at 2 in order to skip '.' and '..' */
     for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))
     {
         p = (proc *)malloc(sizeof(proc));
         p->pid = dir[i]->d_name;
+
         strcat(ppath, p->pid);
         lstat(ppath, &dirInfo);
         pswd = getpwuid(dirInfo.st_uid);
+
         p->user = pswd->pw_name;
+
         getcmd(p->pid, p);
         parse_status(p);
-        // getstatus(p->pid);
-        // strcat(ppath, dir[i]->d_name);
-        // lstat(ppath, &procInfo);
-        // pswd = getpwuid(procInfo.st_uid);
-        // printf("User: %-10s PID: %5s ",
-        //        p->pw_name, proc[i]->d_name);
-        // getstatus(proc[i]->d_name);
-        // getcmd(proc[i]->d_name);
-        // getstart(procInfo);
-        // printf("\n");
-        // printf("command: %s\n", p->command);
+        getstart(dirInfo, p);
+
         print_proc(p);
+
+        free(dir[i]);
         free(p);
     }
-    // printf("%s\n", file_to_string("/proc/7/status"));
-    // printf("Memtotal: %d\n", getmemtotal());
+    free(dir);
 
     return 0;
 }
