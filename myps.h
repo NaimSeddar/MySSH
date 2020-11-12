@@ -30,9 +30,12 @@ typedef struct _proc
     int time_cumul;
 } proc;
 
-char **str_split(char *str, const char delimiter);
+float getuptime();
 int getmemtotal();
-void getstatus(char *pid);
+void getmem(proc *p);
 void getcmd(char *pid, proc *p);
 void getstart(struct stat s, proc *p);
+void parse_status(proc *p);
+void parse_stat(proc *p);
+void getcolor(proc *p);
 void print_proc(proc *p);
