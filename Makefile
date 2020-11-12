@@ -1,36 +1,39 @@
+BINDIR = ./bin/
+INCDIR = ./includes/
+SRCDIR = ./src/
 CC = gcc
 CFLAGS = -Wall -ansi -pedantic --std=gnu99
 
-OBJS = utils.o colors.o myls.o mysh.o
+.PHONY: all
+all: myps myls mysh
 
-.PHONY: clean
+utils.o: $(SRCDIR)utils.c $(INCDIR)utils.h
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-myls: colors.o myls.o
-	gcc -o myls colors.o myls.o
+colors.o: $(SRCDIR)colors.c $(INCDIR)colors.h
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+
+myls.o: $(SRCDIR)myls.c $(INCDIR)myls.h 
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+
+mysh.o: $(SRCDIR)mysh.c $(INCDIR)mysh.h $(INCDIR)utils.h
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+	
+myps.o: $(SRCDIR)myps.c $(INCDIR)myps.h $(INCDIR)utils.h $(INCDIR)colors.h
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+
+myls: colors.o  myls.o
+	gcc -o $@ $(BINDIR)colors.o $(BINDIR)myls.o
 
 mysh: utils.o mysh.o 
-	gcc -o mysh utils.o mysh.o
+	gcc -o $@ $(BINDIR)utils.o $(BINDIR)mysh.o
 
 myps: colors.o utils.o myps.o
-	gcc -o myps colors.o utils.o myps.o
+	gcc -o $@ $(BINDIR)colors.o $(BINDIR)utils.o $(BINDIR)myps.o
 
-utils.o: utils.c utils.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-colors.o: colors.c colors.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-myls.o: myls.c myls.h 
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-mysh.o: mysh.c mysh.h utils.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-	
-myps.o: myps.c myps.h utils.h colors.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-
+.PHONY: clean
 clean:
-	@rm -f *.o
+	@rm -f ./bin/*.o
 	@rm -f myls
 	@rm -f mysh
 	@rm -f myps
