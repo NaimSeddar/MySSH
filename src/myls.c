@@ -33,6 +33,26 @@ char dirType(mode_t m)
         printf(BLUE_C);
         res = 'l';
     }
+    else if (S_ISCHR(m))
+    {
+        printf(MAGENTA_C);
+        res = 'c';
+    }
+    else if (S_ISBLK(m))
+    {
+        printf(CYAN_C);
+        res = 'b';
+    }
+    else if (S_ISSOCK(m))
+    {
+        printf(YELLOW_C);
+        res = 's';
+    }
+    else if (S_ISFIFO(m))
+    {
+        printf(GREEN_C);
+        res = 'p';
+    }
     else
     {
         printf(WHITE_C);
@@ -44,8 +64,7 @@ char dirType(mode_t m)
 
 void print_dirHeader(char *dir)
 {
-    whiteBG();
-    printf(RED_C "%s" RESET_C "\n", dir);
+    printf(U_RED_C "%s" RESET_C "\n", dir);
 }
 
 void print_perms(struct stat s)
