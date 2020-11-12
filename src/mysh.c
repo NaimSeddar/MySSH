@@ -1,5 +1,6 @@
 #include "../includes/mysh.h"
 #include "../includes/utils.h"
+#include "../includes/colors.h"
 
 /**
  * A better system(), saw in class.
@@ -64,8 +65,10 @@ void printprompt()
     currpath[len] = '$';
     currpath[len + 1] = ' ';
 
+    writein(GREEN_C);
     if (write(STDOUT_FILENO, currpath, strlen(currpath)) == ERR)
         perror("Write"), exit(1);
+    writein(RESET_C);
 }
 
 int main(int argv, char *argc[])

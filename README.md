@@ -4,9 +4,10 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 ## Executables
 ## *mysh*  
 ### Fonctionnalités :
+    [ ] Petit prompt sympa
     [ ] Changer de répertoire (cd)  
     [ ] Commande "status" 
-    [ ] Enchainement de commande via les ";"  
+    [;] Enchainement de commande via les ";"  
     [ ] Application des && et ||  
     [ ] Wildcards  
     [ ] Pipeliner bien comme il faut  

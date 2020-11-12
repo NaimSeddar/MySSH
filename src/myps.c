@@ -253,14 +253,11 @@ int main()
         double t = p->time_cumul;
         int secs = t / sysconf(_SC_CLK_TCK);
         int mins = secs == 0 ? 0 : 60 / (t - (double)secs);
-        int hours = mins == 0 ? 0 : 60 / (t - (double)mins);
         sprintf(p->time, "%02d:%02d", mins, secs);
-        // p->time = (ctime(&dirInfo.st_mtime) + 11);
 
         print_proc(p);
 
         free(dir[i]);
-        // free(p->tty);
         free(p);
     }
     free(dir);

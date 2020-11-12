@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 // [COLOR]_C
 #define BLACK_C "\033[1;30m"
@@ -16,3 +18,4 @@
 
 void grayBG();
 void whiteBG();
+void writein(const char *color);
