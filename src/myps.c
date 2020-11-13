@@ -181,23 +181,23 @@ void getcolor(proc *p)
     switch (p->stat[0])
     {
     case 'S':
-        printf(BLUE_C);
+        writein(BLUE_C);
         break;
 
     case 'R':
-        printf(GREEN_C);
+        writein(GREEN_C);
         break;
 
     case 'Z':
-        printf(RED_C);
+        writein(MAGENTA_C);
         break;
 
     case 'D':
-        printf(WHITE_C);
+        writein(CYAN_C);
         break;
 
     case 'T':
-        grayBG();
+        writein(YELLOW_C);
         break;
 
     default:
@@ -230,8 +230,8 @@ int main()
     }
 
     /* print command header */
-    printf("%-8s %8s %8s %8s %8s %8s %8s %8s %.5s %.4s %s\n",
-           "USER", "PID", "%CPU", "%MEM", "RSS", "VSZ", "TTY", "STAT", "START", "TIME", "COMMAND");
+    printf("%s%-8s %8s %8s %8s %8s %8s %8s %8s %.5s %.4s %s%s\n", U_WHITE_C,
+           "USER", "PID", "%CPU", "%MEM", "RSS", "VSZ", "TTY", "STAT", "START", "TIME", "COMMAND", RESET_C);
 
     /* i starting at 2 in order to skip '.' and '..' */
     for (int i = 2; i < n && isdigit(*dir[i]->d_name); i++, strcpy(ppath, "/proc/"))

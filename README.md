@@ -7,7 +7,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Petit prompt sympa
     [ ] Changer de répertoire (cd)  
     [ ] Commande "status" 
-    [;] Enchainement de commande via les ";"  
+    [x] Enchainement de commande via les ";"  
     [ ] Application des && et ||  
     [ ] Wildcards  
     [ ] Pipeliner bien comme il faut  
