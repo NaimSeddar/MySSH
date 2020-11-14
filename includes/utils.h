@@ -12,8 +12,11 @@
  */
 char **str_split(char *str, const char delimiter);
 
+int occu(char *str, const char *needle);
+
+char **str_splitv2(char *str, const char *delimiter);
+
 /*
  * File into string
  */
-
 char *file_to_string(char *filename);

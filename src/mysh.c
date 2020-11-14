@@ -7,9 +7,10 @@
  * A lighter version base on execvp. 
  * @param command
  * */
-int systemV2(char **command)
+int systemV2(char *command)
 {
     int status;
+    char **commands = str_split(command, ' ');
     pid_t pid = fork();
 
     // for (int i = 0; *(command + i); i++)
@@ -28,12 +29,13 @@ int systemV2(char **command)
     {
         // printf("To exec: %s\n", command);
         // execl("/bin/sh", "sh", "-c", command, (const char *)0);
-        execvp(*command, command);
-        while (*(command++))
-        {
-            free(*command);
-        }
-        free(command);
+        execvp(*commands, commands);
+
+        // while (*(commands++))
+        // {
+        //     free(*commands);
+        // }
+        // free(commands);
         exit(FAILED_EXEC);
     }
 
@@ -50,6 +52,86 @@ int systemV2(char **command)
     return ERR;
 }
 
+int parser(char *command)
+{
+    int res;
+    char **commands = str_split(command, ';');
+    // printf("Entrer parser (%s)\n", *commands);
+    for (int i = 0; *(commands + i); i++)
+    {
+        // printf("blabla haut\n");
+        // printf("Loop parser (%d : %s)\n", i, *(commands + i));
+
+        /* Check if there's a pipe*/
+        if (strstr(*(commands + i), "||") != NULL)
+        {
+            printf("Lance un OU sur: (%s)\n", *(commands + i));
+            res = or_op(*(commands + i));
+        }
+        else if (strstr(*(commands + i), "&&") != NULL)
+        {
+            // printf("Lance un ET sur: (%s)\n", *(commands + i));
+            res = and_op(*(commands + i));
+        }
+        /* Check if there's a pipe*/
+        else if (strstr(*(commands + i), "|") != NULL)
+        {
+            printf("Lance pipeline sur: (%s)\n", *(commands + i));
+            res = pipeline(*(commands + i));
+        }
+        else
+        {
+            // printf("Lance exec sur: (%s)\n", *(commands + i));
+            res = systemV2(command);
+        }
+        // printf("blabla bas\n");
+        // free(commands + i);
+    }
+    // free(commands);
+    return res;
+}
+
+int and_op(char *command)
+{
+    int res = 0;
+    char **buffer = str_splitv2(command, "&&");
+
+    for (int i = 0; *(buffer + i); i++)
+    {
+        printf("Handle this (%s)\n", *(buffer + i));
+        res = parser(*(buffer + i));
+        if (res)
+            return res;
+        // free(buffer + i);
+    }
+    // free(buffer);
+
+    return res;
+}
+
+int or_op(char *command)
+{
+    int res = 0;
+    char **buffer = str_splitv2(command, "||");
+
+    for (int i = 0; *(buffer + i); i++)
+    {
+        printf("Handle this (%s)\n", *(buffer + i));
+        res = parser(*(buffer + i));
+        if (!res)
+            return res;
+        // free(buffer + i);
+    }
+    // free(buffer);
+
+    return res;
+}
+
+int pipeline(char *command)
+{
+    return 0;
+}
+
 void printprompt()
 {
     char currpath[1024];
@@ -64,11 +146,15 @@ void printprompt()
     len = strlen(currpath);
     currpath[len] = '$';
     currpath[len + 1] = ' ';
+    currpath[len + 2] = '\0';
 
-    writein(GREEN_C);
-    if (write(STDOUT_FILENO, currpath, strlen(currpath)) == ERR)
-        perror("Write"), exit(1);
-    writein(RESET_C);
+    // writein(GREEN_C);
+    // if (write(STDOUT_FILENO, currpath, strlen(currpath)) == ERR)
+    //     perror("Write"), exit(1);
+    // writein(RESET_C);
+
+    printf(GREEN_C "%s" RESET_C, currpath);
+    fflush(stdout);
 }
 
 int main(int argv, char *argc[])
@@ -80,7 +166,6 @@ int main(int argv, char *argc[])
     }
 
     char *buffer;
-    char **commands;
 
     for (;;)
     {
@@ -103,16 +188,18 @@ int main(int argv, char *argc[])
         }
         else
         {
-            commands = str_split(buffer, ';');
+
             // if "cd" --> chdir(arg)
             // buffer = strtok(buffer, ';');
-            for (int i = 0; *(commands + i); i++)
+            /*for (int i = 0; *(commands + i); i++)
             {
                 // printf("<%s>\n", str_split(*(commands + i), ' ')[0]);
                 printf("status: %d\n", systemV2(str_split(*(commands + i), ' ')));
                 free(*(commands + i));
-            }
-            free(commands);
+            }*/
+            printf(YELLOW_C "[%d]" RESET_C, parser(buffer));
+
+            // free(commands);
         }
         free(buffer);
     }

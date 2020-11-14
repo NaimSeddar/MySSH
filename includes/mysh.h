@@ -13,4 +13,12 @@
  * A lighter version base on execvp. 
  * @param command
  * */
-int systemV2(char **command);
+int systemV2(char *command);
+
+int parser(char *command);
+
+int and_op(char *command);
+
+int or_op(char *command);
+
+int pipeline(char *command);
