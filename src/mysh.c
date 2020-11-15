@@ -13,9 +13,9 @@ int systemV2(char *command)
     char **commands = str_split(command, ' ');
     pid_t pid = fork();
 
-    // for (int i = 0; *(command + i); i++)
+    // for (int i = 0; *(commands + i); i++)
     // {
-    //     printf("<%s> ", *(command + i));
+    //     printf("<%s> ", *(commands + i));
     // }
     // printf("\n");
 
@@ -56,7 +56,7 @@ int parser(char *command)
 {
     int res;
     char **commands = str_split(command, ';');
-    // printf("Entrer parser (%s)\n", *commands);
+    printf("Entrer parser (%s)\n", *commands);
     for (int i = 0; *(commands + i); i++)
     {
         // printf("blabla haut\n");
@@ -129,7 +129,47 @@ int or_op(char *command)
 
 int pipeline(char *command)
 {
-    return 0;
+    int p[2];
+    pid_t pid;
+    int fd_in = 0;
+    int i = 0;
+    int status;
+    char **cmds = str_split(command, '|');
+
+    while (cmds[i])
+    {
+        pipe(p);
+        if ((pid = fork()) == -1)
+        {
+            exit(1);
+        }
+        else if (pid == 0)
+        {
+            dup2(fd_in, 0);
+            if (cmds[i + 1])
+                dup2(p[1], 1);
+            close(p[0]);
+            printf("exec in pipe: %s\n", cmds[i]);
+            exit(parser(cmds[i]));
+        }
+        else
+        {
+            if (wait(&status) == ERR)
+            {
+                return ERR;
+            }
+            close(p[1]);
+            fd_in = p[0];
+            i++;
+        }
+    }
+
+    if (WIFEXITED(status))
+    {
+        return WEXITSTATUS(status);
+    }
+
+    return ERR;
 }
 
 void printprompt()
@@ -173,6 +213,7 @@ int main(int argv, char *argc[])
         // printf("%s$ ", currpath);
 
         buffer = malloc(BUFFER_SIZE * sizeof(char));
+        memset(buffer, '\0', BUFFER_SIZE);
 
         if (read(STDIN_FILENO, buffer, 1024) == ERR)
             perror("Read"), exit(2);

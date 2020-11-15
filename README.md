@@ -8,9 +8,9 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Changer de répertoire (cd)  
     [ ] Commande "status" 
     [x] Enchainement de commande via les ";"  
-    [ ] Application des && et ||  
+    [x] Application des && et ||  
     [ ] Wildcards  
-    [ ] Pipeliner bien comme il faut  
+    [x] Pipeliner bien comme il faut  
     [ ] Redirection vers ou depuis un fichier (>, >>, 2>, 2>>, >&, >>&, <)  
     [ ] Lancer un prog en background  
     [ ] Commande interne myjobs  
