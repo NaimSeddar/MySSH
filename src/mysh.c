@@ -1,6 +1,7 @@
 #include "../includes/mysh.h"
 #include "../includes/utils.h"
 #include "../includes/colors.h"
+#include "../includes/redirections.h"
 
 /**
  * A better system(), saw in class.
@@ -78,6 +79,11 @@ int parser(char *command)
         {
             printf("Lance pipeline sur: (%s)\n", *(commands + i));
             res = pipeline(*(commands + i));
+        }
+        else if (strstr(*(commands + i), ">>") != NULL)
+        {
+            printf("Redirection >> sur: (%s)\n", *(commands + i));
+            res = stdout_to_endoffic(*(commands + i));
         }
         else
         {

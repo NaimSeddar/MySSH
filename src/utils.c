@@ -102,6 +102,28 @@ char **str_splitv2(char *str, const char *delimiter)
 
     return result;
 }
+/*
+char *trimwhitespace(char *str)
+{
+    for(int i = 0; *(str+i+1); i++) {
+        if(isspace(*(str+i+1))) {
+
+        }
+    }
+    
+}*/
+
+void remove_whitespaces(char *str)
+{
+    const char *d = str;
+    do
+    {
+        while (*d == ' ')
+        {
+            ++d;
+        }
+    } while (*(str++) = *d++);
+}
 
 /*
  * File into string

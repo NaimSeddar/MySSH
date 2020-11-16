@@ -16,10 +16,13 @@ utils.o: $(SRCDIR)utils.c $(INCDIR)utils.h
 colors.o: $(SRCDIR)colors.c $(INCDIR)colors.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
+redirections.o: $(SRCDIR)redirections.c $(INCDIR)redirections.h $(INCDIR)utils.h
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+
 myls.o: $(SRCDIR)myls.c $(INCDIR)myls.h 
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-mysh.o: $(SRCDIR)mysh.c $(INCDIR)mysh.h $(TOOLS_H)
+mysh.o: $(SRCDIR)mysh.c $(INCDIR)mysh.h $(TOOLS_H) $(INCDIR)redirections.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 	
 myps.o: $(SRCDIR)myps.c $(INCDIR)myps.h $(INCDIR)utils.h $(INCDIR)colors.h
@@ -28,11 +31,11 @@ myps.o: $(SRCDIR)myps.c $(INCDIR)myps.h $(INCDIR)utils.h $(INCDIR)colors.h
 myls: colors.o  myls.o
 	gcc -o $@ $(BINDIR)colors.o $(BINDIR)myls.o
 
-mysh: colors.o utils.o mysh.o 
-	gcc -o $@ $(TOOLS_O) $(BINDIR)mysh.o
+mysh: colors.o utils.o redirections.o mysh.o 
+	gcc -o $@ $(TOOLS_O) $(BINDIR)redirections.o $(BINDIR)mysh.o
 
 myps: colors.o utils.o myps.o
-	gcc -o $@ $(BINDIR)colors.o $(BINDIR)utils.o $(BINDIR)myps.o
+	gcc -o $@ $(TOOLS_O) $(BINDIR)myps.o
 
 .PHONY: clean
 clean:
