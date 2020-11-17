@@ -3,8 +3,6 @@
 
 /*
  *  TODO:
- *      2>      idem que > pour la sortie standard des erreurs
- *      2>>     idem que >> pour la sortie standard des erreurs
  *      >&      redirige la stdin et la stderr de la commande vers le fichier. O_TRUNC 
  *      >>&     redirige la stdin et la stderr de la commande vers le fichier. O_APPEND 
  *      <       redirige l"entrée standard de la commande vers stdin 
@@ -98,4 +96,10 @@ int stderr_to_fic(char *command, int flags)
     close(save_err);
 
     return res;
+}
+
+int strerr_and_stdout(char *command, int flags)
+{
+    /* The last always append so there's both, stderr and stdout printed in the file */
+    return stderr_to_fic(command, flags) && stdout_to_fic(command, O_CREAT | O_WRONLY | O_APPEND);
 }
