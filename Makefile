@@ -16,7 +16,7 @@ utils.o: $(SRCDIR)utils.c $(INCDIR)utils.h
 colors.o: $(SRCDIR)colors.c $(INCDIR)colors.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-redirections.o: $(SRCDIR)redirections.c $(INCDIR)redirections.h $(INCDIR)utils.h
+redirections.o: $(SRCDIR)redirections.c $(INCDIR)redirections.h $(INCDIR)utils.h $(INCDIR)mysh.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
 myls.o: $(SRCDIR)myls.c $(INCDIR)myls.h 

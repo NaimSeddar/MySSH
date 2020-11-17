@@ -1,7 +1,4 @@
 #include "../includes/mysh.h"
-#include "../includes/utils.h"
-#include "../includes/colors.h"
-#include "../includes/redirections.h"
 
 /**
  * A better system(), saw in class.

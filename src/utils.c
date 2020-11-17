@@ -122,7 +122,7 @@ void remove_whitespaces(char *str)
         {
             ++d;
         }
-    } while (*(str++) = *d++);
+    } while ((*str++ = *d++));
 }
 
 /*

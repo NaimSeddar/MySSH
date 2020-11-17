@@ -4,6 +4,10 @@
 #include <sys/wait.h>
 #include <string.h>
 
+#include "../includes/utils.h"
+#include "../includes/colors.h"
+#include "../includes/redirections.h"
+
 #define BUFFER_SIZE 1024
 #define ERR -1
 #define FAILED_EXEC 127

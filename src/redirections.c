@@ -1,19 +1,41 @@
 #include "../includes/redirections.h"
+#include "../includes/mysh.h"
 
+/*
+ * commande >> fichier
+ */
 int stdout_to_endoffic(char *command)
 {
+    if (occu(command, ">>") > 1)
+        return 1;
 
     char **elt = str_splitv2(command, ">>");
+    int out, save_out, res;
 
-    printf("v\n");
-    while (*elt)
+    remove_whitespaces(elt[1]);
+
+    if ((out = open(elt[1], O_CREAT | O_APPEND | O_WRONLY)) < 0)
     {
-        remove_whitespaces(*elt);
-        printf("(%s)\n", *(elt++));
+        perror("open (>>)");
+        return 1;
     }
-    printf("^\n");
 
-    // printf(">> avec (%s)\n", command);
+    save_out = dup(fileno(stdout));
 
-    return 0;
+    if (dup2(out, fileno(stdout)) < 0)
+    {
+        perror("dup2 (>>)");
+        return 1;
+    }
+
+    res = parser(elt[0]);
+
+    fflush(stdout);
+    close(out);
+
+    dup2(save_out, fileno(stdout));
+
+    close(save_out);
+
+    return res;
 }
