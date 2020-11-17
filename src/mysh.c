@@ -34,11 +34,13 @@ int systemV2(char *command)
         //     free(*commands);
         // }
         // free(commands);
+        perror("execvp failed");
         exit(FAILED_EXEC);
     }
 
     if (wait(&status) == ERR)
     {
+        perror("wait");
         return ERR;
     }
 
@@ -72,10 +74,20 @@ int parser(char *command)
             res = and_op(*(commands + i));
         }
         /* Check if there's a pipe*/
-        else if (strstr(*(commands + i), "|") != NULL)
+        else if (strchr(*(commands + i), '|') != NULL)
         {
             printf("Lance pipeline sur: (%s)\n", *(commands + i));
             res = pipeline(*(commands + i));
+        }
+        else if (strstr(*(commands + i), "2>>") != NULL)
+        {
+            printf("Redirection 2>> sur: (%s)\n", *(commands + i));
+            res = stderr_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
+        }
+        else if (strstr(*(commands + i), "2>") != NULL)
+        {
+            printf("Redirection 2> sur: (%s)\n", *(commands + i));
+            res = stderr_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
         else if (strstr(*(commands + i), ">>") != NULL)
         {
