@@ -3,8 +3,11 @@
 
 /*
  * commande >> fichier
+ * flags:
+ *  >>  O_CREAT | O_WRONLY | O_APPEND
+ *  >   O_CREAT | O_WRONLY | O_TRUNC
  */
-int stdout_to_endoffic(char *command)
+int stdout_to_fic(char *command, int flags)
 {
     if (occu(command, ">>") > 1)
         return 1;
@@ -13,8 +16,8 @@ int stdout_to_endoffic(char *command)
     int out, save_out, res;
 
     remove_whitespaces(elt[1]);
-
-    if ((out = open(elt[1], O_CREAT | O_APPEND | O_WRONLY)) < 0)
+    /* - rw- r-- r-- */
+    if ((out = open(elt[1], flags, 0644)) < 0)
     {
         perror("open (>>)");
         return 1;

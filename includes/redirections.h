@@ -3,4 +3,4 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int stdout_to_endoffic(char *command);
+int stdout_to_fic(char *command, int flags);

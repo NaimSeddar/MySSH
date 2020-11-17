@@ -80,7 +80,7 @@ int parser(char *command)
         else if (strstr(*(commands + i), ">>") != NULL)
         {
             printf("Redirection >> sur: (%s)\n", *(commands + i));
-            res = stdout_to_endoffic(*(commands + i));
+            res = stdout_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
         }
         else
         {
