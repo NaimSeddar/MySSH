@@ -89,10 +89,20 @@ int parser(char *command)
             printf("Redirection 2> sur: (%s)\n", *(commands + i));
             res = stderr_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
+        else if (strstr(*(commands + i), ">>&") != NULL)
+        {
+            printf("Redirection >>& sur: (%s)\n", *(commands + i));
+            res = stderr_and_stdout(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
+        }
         else if (strstr(*(commands + i), ">>") != NULL)
         {
             printf("Redirection >> sur: (%s)\n", *(commands + i));
             res = stdout_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
+        }
+        else if (strstr(*(commands + i), ">&") != NULL)
+        {
+            printf("Redirection >& sur: (%s)\n", *(commands + i));
+            res = stderr_and_stdout(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
         else
         {

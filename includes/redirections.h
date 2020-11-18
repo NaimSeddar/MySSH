@@ -6,3 +6,5 @@
 int stdout_to_fic(char *command, int flags);
 
 int stderr_to_fic(char *command, int flags);
+
+int stderr_and_stdout(char *command, int flags);

@@ -21,6 +21,9 @@ int stdout_to_fic(char *command, int flags)
      *      577  if O_TRUNC 
      *      1089 if O_APPEND 
      */
+
+    printf("stderr to fic (%s & %d)\n", command, flags);
+
     if (occu(command, ">>") > 1)
         return 1;
 
@@ -62,7 +65,7 @@ int stderr_to_fic(char *command, int flags)
      *      577  if O_TRUNC 
      *      1089 if O_APPEND 
      */
-
+    printf("stderr to fic (%s & %d)\n", command, flags);
     const char *type = (flags == 577 ? "2>" : "2>>");
     if (occu(command, type) > 1)
         return 1;
@@ -98,8 +101,46 @@ int stderr_to_fic(char *command, int flags)
     return res;
 }
 
-int strerr_and_stdout(char *command, int flags)
+int stderr_and_stdout(char *command, int flags)
 {
-    /* The last always append so there's both, stderr and stdout printed in the file */
-    return stderr_to_fic(command, flags) && stdout_to_fic(command, O_CREAT | O_WRONLY | O_APPEND);
+
+    const char *type = (flags == 577 ? ">&" : ">>&");
+    if (occu(command, type) > 1)
+        return 1;
+
+    char **elt = str_splitv2(command, type);
+    int err, out, save_err, save_out, res;
+
+    remove_whitespaces(elt[1]);
+    /* - rw- r-- r-- */
+    /* The out always append so there's both, stderr and stdout printed in the file */
+    if ((err = open(elt[1], flags, 0644)) < 0 || (out = open(elt[1], O_WRONLY | O_APPEND, 0644)) < 0)
+    {
+        perror("open (stderr_and_stdout)");
+        return 1;
+    }
+
+    save_err = dup(fileno(stderr));
+    save_out = dup(fileno(stdout));
+
+    if (dup2(err, fileno(stderr)) < 0 || dup2(out, fileno(stdout)) < 0)
+    {
+        perror("dup2 (stderr_and_stdout)");
+        return 1;
+    }
+
+    res = parser(elt[0]);
+
+    fflush(stdout);
+    close(out);
+    fflush(stderr);
+    close(err);
+
+    dup2(save_out, fileno(stdout));
+    dup2(save_err, fileno(stderr));
+
+    close(save_out);
+    close(save_err);
+
+    return res;
 }
