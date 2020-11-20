@@ -12,9 +12,15 @@ void ctrlc(int sig)
     }
     else
     {
-        kill(cmd_pid, SIGTERM);
+        kill(cmd_pid, SIGKILL);
     }
     cmd_pid = -1;
+}
+
+void ctrlz(int sig)
+{
+    printf("pid to stop : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
+    kill((cmd_pid == -1 ? getpid() : cmd_pid), SIGSTOP);
 }
 
 /**
@@ -29,18 +35,11 @@ int systemV2(char *command)
     pid_t pid = fork();
     cmd_pid = pid;
 
-    // for (int i = 0; *(commands + i); i++)
-    // {
-    //     printf("<%s> ", *(commands + i));
-    // }
-    // printf("\n");
-
     if (pid == ERR)
     {
         perror("Fork");
         return ERR;
     }
-    // printf("cmd_pid <%d> ", cmd_pid);
 
     if (!pid)
     {
@@ -48,12 +47,9 @@ int systemV2(char *command)
         // execl("/bin/sh", "sh", "-c", command, (const char *)0);
         execvp(*commands, commands);
 
-        // while (*(commands++))
-        // {
-        //     free(*commands);
-        // }
-        // free(commands);
-        perror("execvp failed");
+        fprintf(stderr, "%s: Unknown command\n", *commands);
+        perror("");
+        // perror("execvp failed");
         exit(FAILED_EXEC);
     }
 
@@ -255,11 +251,13 @@ void mysh()
 {
 
     signal(SIGINT, ctrlc);
+    signal(SIGTSTP, ctrlz);
 
     char *buffer;
 
     for (;;)
     {
+        cmd_pid = -1;
         printprompt();
         // printf("%s$ ", currpath);
 
@@ -289,6 +287,7 @@ void mysh()
                 printf("status: %d\n", systemV2(str_split(*(commands + i), ' ')));
                 free(*(commands + i));
             }*/
+
             printf(YELLOW_C "[%d]" RESET_C, parser(buffer));
 
             // free(commands);

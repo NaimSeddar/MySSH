@@ -12,7 +12,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [x] Application des && et ||  
     [ ] Wildcards  
     [x] Pipeliner bien comme il faut  
-    [ ] Redirection vers ou depuis un fichier (>, >>, 2>, 2>>, >&, >>&, <)  
+    [x] Redirection vers ou depuis un fichier (>, >>, 2>, 2>>, >&, >>&, <)  
     [ ] Lancer un prog en background  
     [ ] Commande interne myjobs  
     [ ] Passer une commande de foreground à background (et inversement)  
