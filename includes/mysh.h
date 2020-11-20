@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <signal.h>
 
 #include "../includes/utils.h"
 #include "../includes/colors.h"
@@ -11,6 +12,8 @@
 #define BUFFER_SIZE 1024
 #define ERR -1
 #define FAILED_EXEC 127
+
+extern pid_t cmd_pid;
 
 /**
  * A better system(), saw in class.

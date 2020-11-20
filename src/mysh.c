@@ -1,5 +1,22 @@
 #include "../includes/mysh.h"
 
+pid_t cmd_pid = -1;
+
+void ctrlc(int sig)
+{
+    printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
+    if (cmd_pid == -1)
+    {
+        printf("kill main\n");
+        kill(getpid(), SIGKILL);
+    }
+    else
+    {
+        kill(cmd_pid, SIGTERM);
+    }
+    cmd_pid = -1;
+}
+
 /**
  * A better system(), saw in class.
  * A lighter version base on execvp. 
@@ -10,6 +27,7 @@ int systemV2(char *command)
     int status;
     char **commands = str_split(command, ' ');
     pid_t pid = fork();
+    cmd_pid = pid;
 
     // for (int i = 0; *(commands + i); i++)
     // {
@@ -22,10 +40,11 @@ int systemV2(char *command)
         perror("Fork");
         return ERR;
     }
+    // printf("cmd_pid <%d> ", cmd_pid);
 
     if (!pid)
     {
-        // printf("To exec: %s\n", command);
+        printf("child pid : %d\n", getpid());
         // execl("/bin/sh", "sh", "-c", command, (const char *)0);
         execvp(*commands, commands);
 
@@ -232,13 +251,10 @@ void printprompt()
     fflush(stdout);
 }
 
-int main(int argv, char *argc[])
+void mysh()
 {
-    if (argv > 1)
-    {
-        printf("Aucun argument n'est requis pour '%s'\n", argc[1]);
-        exit(1);
-    }
+
+    signal(SIGINT, ctrlc);
 
     char *buffer;
 
@@ -279,6 +295,17 @@ int main(int argv, char *argc[])
         }
         free(buffer);
     }
+}
+
+int main(int argv, char *argc[])
+{
+    if (argv > 1)
+    {
+        printf("Aucun argument n'est requis pour '%s'\n", argc[1]);
+        exit(1);
+    }
+
+    mysh();
 
     return 0;
 }
