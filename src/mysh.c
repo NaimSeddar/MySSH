@@ -104,6 +104,16 @@ int parser(char *command)
             printf("Redirection >& sur: (%s)\n", *(commands + i));
             res = stderr_and_stdout(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
+        else if (strstr(*(commands + i), ">") != NULL)
+        {
+            printf("Redirection > sur: (%s)\n", *(commands + i));
+            res = stdout_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
+        }
+        else if (strstr(*(commands + i), "<") != NULL)
+        {
+            printf("Redirection < sur: (%s)\n", *(commands + i));
+            res = fic_to_stdin(*(commands + i));
+        }
         else
         {
             // printf("Lance exec sur: (%s)\n", *(commands + i));

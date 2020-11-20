@@ -22,19 +22,19 @@ int stdout_to_fic(char *command, int flags)
      *      1089 if O_APPEND 
      */
 
-    printf("stderr to fic (%s & %d)\n", command, flags);
-
-    if (occu(command, ">>") > 1)
+    printf("stdout to fic (%s & %d)\n", command, flags);
+    const char *type = (flags == 577 ? ">" : ">>");
+    if (occu(command, type) > 1)
         return 1;
 
-    char **elt = str_splitv2(command, ">>");
+    char **elt = str_splitv2(command, type);
     int out, save_out, res;
 
     remove_whitespaces(elt[1]);
     /* - rw- r-- r-- */
     if ((out = open(elt[1], flags, 0644)) < 0)
     {
-        perror("open (>>)");
+        perror("open (stdout to fic)");
         return 1;
     }
 
@@ -42,7 +42,7 @@ int stdout_to_fic(char *command, int flags)
 
     if (dup2(out, fileno(stdout)) < 0)
     {
-        perror("dup2 (>>)");
+        perror("dup2 (stdout to fic)");
         return 1;
     }
 
@@ -141,6 +141,43 @@ int stderr_and_stdout(char *command, int flags)
 
     close(save_out);
     close(save_err);
+
+    return res;
+}
+
+int fic_to_stdin(char *command)
+{
+    printf("fic to stdin (%s & %d)\n", command, O_RDONLY);
+
+    if (occu(command, "<") > 1)
+        return 1;
+
+    char **elt = str_splitv2(command, "<");
+    int in, save_in, res;
+
+    remove_whitespaces(elt[1]);
+
+    if ((in = open(elt[1], O_CREAT | O_RDONLY)) < 0)
+    {
+        perror("open (<)");
+        return 1;
+    }
+
+    save_in = dup(fileno(stdin));
+
+    if (dup2(in, fileno(stdin)) < 0)
+    {
+        perror("dup2 (<)");
+        return 1;
+    }
+
+    res = systemV2(elt[0]);
+
+    fflush(stdin);
+    close(in);
+    dup2(save_in, fileno(stdin));
+    close(save_in);
+    // close(save_in);
 
     return res;
 }
