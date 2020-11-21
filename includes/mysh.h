@@ -8,6 +8,7 @@
 #include "../includes/utils.h"
 #include "../includes/colors.h"
 #include "../includes/redirections.h"
+#include "../includes/builtin.h"
 
 #define BUFFER_SIZE 1024
 #define ERR -1

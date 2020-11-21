@@ -7,7 +7,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Petit prompt sympa
     [ ] Changer de répertoire (cd)  
     [ ] Commande "status" 
-    [ ] Les signaux  
+    [x] Les signaux  
     [x] Enchainement de commande via les ";"  
     [x] Application des && et ||  
     [ ] Wildcards  

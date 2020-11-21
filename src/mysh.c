@@ -17,11 +17,11 @@ void ctrlc(int sig)
     cmd_pid = -1;
 }
 
-void ctrlz(int sig)
+/*void ctrlz(int sig)
 {
     printf("pid to stop : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
     kill((cmd_pid == -1 ? getpid() : cmd_pid), SIGSTOP);
-}
+}*/
 
 /**
  * A better system(), saw in class.
@@ -32,6 +32,9 @@ int systemV2(char *command)
 {
     int status;
     char **commands = str_split(command, ' ');
+    int b_in = builtin_parser(*commands, commands[1]);
+    if (!b_in)
+        return b_in;
     pid_t pid = fork();
     cmd_pid = pid;
 
@@ -43,6 +46,10 @@ int systemV2(char *command)
 
     if (!pid)
     {
+        pid_t pgid = getpid();
+        setpgid(getpid(), pgid);
+        // Put to sleep exec
+        // tcsetpgrp(STDIN_FILENO, pgid);
         printf("child pid : %d\n", getpid());
         // execl("/bin/sh", "sh", "-c", command, (const char *)0);
         execvp(*commands, commands);
@@ -52,6 +59,11 @@ int systemV2(char *command)
         // perror("execvp failed");
         exit(FAILED_EXEC);
     }
+
+    pid_t pgid = pid;
+    setpgid(pid, pgid);
+    // Put to sleep mysh
+    // tcsetpgrp(STDIN_FILENO, pgid);
 
     if (wait(&status) == ERR)
     {
@@ -75,7 +87,7 @@ int parser(char *command)
     for (int i = 0; *(commands + i); i++)
     {
         // printf("blabla haut\n");
-        // printf("Loop parser (%d : %s)\n", i, *(commands + i));
+        printf("Loop parser (%d : %s)\n", i, *(commands + i));
 
         /* Check if there's a pipe*/
         if (strstr(*(commands + i), "||") != NULL)
@@ -132,7 +144,7 @@ int parser(char *command)
         else
         {
             // printf("Lance exec sur: (%s)\n", *(commands + i));
-            res = systemV2(command);
+            res = systemV2(*(commands + i));
         }
         // printf("blabla bas\n");
         // free(commands + i);
@@ -251,7 +263,7 @@ void mysh()
 {
 
     signal(SIGINT, ctrlc);
-    signal(SIGTSTP, ctrlz);
+    // signal(SIGTSTP, ctrlz);
 
     char *buffer;
 
