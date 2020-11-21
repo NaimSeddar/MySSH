@@ -246,6 +246,7 @@ int pipeline(char *command)
 void printprompt()
 {
     char currpath[1024];
+    char *username;
     int len;
 
     if (getcwd(currpath, sizeof(currpath)) == NULL)
@@ -259,10 +260,11 @@ void printprompt()
     currpath[len + 1] = ' ';
     currpath[len + 2] = '\0';
 
-    // writein(GREEN_C);
-    // if (write(STDOUT_FILENO, currpath, strlen(currpath)) == ERR)
-    //     perror("Write"), exit(1);
-    // writein(RESET_C);
+    username = getenv("USER");
+    if (username != NULL)
+    {
+        printf(U_RED_C "%s:" RESET_C, username);
+    }
 
     printf(GREEN_C "%s" RESET_C, currpath);
     fflush(stdout);
