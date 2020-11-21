@@ -5,8 +5,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define isspace(x) (x == ' ')
-
 #define BUFFER_SIZE_MALLOC (1024 * sizeof(char))
 
 /**

@@ -1,6 +1,7 @@
 #include "../includes/builtin.h"
 #include "../includes/utils.h"
 #include "../includes/myls.h"
+#include "../includes/myps.h"
 
 int cd(char *path)
 {
@@ -36,6 +37,10 @@ int builtin_parser(char **command_line)
         // printf("Several path ! (%s)\n", arg);
         myls(++command_line);
         return 0;
+    }
+    else if (strncmp(command_line[0], "myps", 4) == 0)
+    {
+        return myps();
     }
     return 1;
 }

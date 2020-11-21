@@ -39,3 +39,4 @@ void parse_status(proc *p);
 void parse_stat(proc *p);
 void getcolor(proc *p);
 void print_proc(proc *p);
+int myps();

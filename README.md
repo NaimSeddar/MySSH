@@ -18,7 +18,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Passer une commande de foreground à background (et inversement)  
     [ ] Prendre en charge des variables (locale et d'environnement) 
     [x] Utliser myls  
-    [ ] Utliser myps  
+    [x] Utliser myps  
 
 
 ## *myls (ls -l)*

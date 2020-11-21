@@ -103,16 +103,6 @@ char **str_splitv2(char *str, const char *delimiter)
     // free(str);
     return result;
 }
-/*
-char *trimwhitespace(char *str)
-{
-    for(int i = 0; *(str+i+1); i++) {
-        if(isspace(*(str+i+1))) {
-
-        }
-    }
-    
-}*/
 
 void remove_whitespaces(char *str)
 {
