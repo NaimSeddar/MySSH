@@ -2,6 +2,9 @@
 
 pid_t cmd_pid = -1;
 
+/* TODO
+ *  Demander confirmation, et tuer tout les enfants en fond.
+ */
 void ctrlc(int sig)
 {
     printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
@@ -32,9 +35,10 @@ int systemV2(char *command)
 {
     int status;
     char **commands = str_split(command, ' ');
-    int b_in = builtin_parser(*commands, commands[1]);
+    int b_in = builtin_parser(commands);
     if (!b_in)
         return b_in;
+    printf("Builint : %d\n", b_in);
     pid_t pid = fork();
     cmd_pid = pid;
 
@@ -57,11 +61,16 @@ int systemV2(char *command)
         fprintf(stderr, "%s: Unknown command\n", *commands);
         perror("");
         // perror("execvp failed");
+        while (*commands != NULL)
+        {
+            free(*(commands++));
+        }
+        free(commands);
         exit(FAILED_EXEC);
     }
 
-    pid_t pgid = pid;
-    setpgid(pid, pgid);
+    // pid_t pgid = pid;
+    // setpgid(pid, pgid);
     // Put to sleep mysh
     // tcsetpgrp(STDIN_FILENO, pgid);
 
@@ -149,7 +158,7 @@ int parser(char *command)
         // printf("blabla bas\n");
         // free(commands + i);
     }
-    // free(commands);
+    free(commands);
     return res;
 }
 
@@ -282,28 +291,17 @@ void mysh()
         // replace '\n' by '\0'
         buffer[strlen(buffer) - 1] = '\0';
 
-        if (strncmp(buffer, "exit", 4) == 0)
+        /*if (strncmp(buffer, "exit", 4) == 0)
         {
             // printf("strcmp: %d\n", strcmp(buffer, "exit"));
             free(buffer);
             break;
-        }
-        else
-        {
+        }*/
 
-            // if "cd" --> chdir(arg)
-            // buffer = strtok(buffer, ';');
-            /*for (int i = 0; *(commands + i); i++)
-            {
-                // printf("<%s>\n", str_split(*(commands + i), ' ')[0]);
-                printf("status: %d\n", systemV2(str_split(*(commands + i), ' ')));
-                free(*(commands + i));
-            }*/
+        printf(YELLOW_C "[%d]" RESET_C, parser(buffer));
 
-            printf(YELLOW_C "[%d]" RESET_C, parser(buffer));
+        // free(commands);
 
-            // free(commands);
-        }
         free(buffer);
     }
 }

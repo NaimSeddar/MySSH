@@ -36,4 +36,6 @@ void print_user(struct stat s);
 
 void print_line(struct stat s, char *name);
 
-void myls(char *path, int a, int r);
+void ls(char *path, int a, int r);
+
+int myls(char **paths);

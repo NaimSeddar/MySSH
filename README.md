@@ -17,6 +17,8 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Commande interne myjobs  
     [ ] Passer une commande de foreground à background (et inversement)  
     [ ] Prendre en charge des variables (locale et d'environnement) 
+    [ ] Utliser myls  
+    [ ] Utliser myps  
 
 
 ## *myls (ls -l)*

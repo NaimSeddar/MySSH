@@ -4,4 +4,4 @@
 
 int cd(char *path);
 
-int builtin_parser(char *command, char *arg);
+int builtin_parser(char **command_line);

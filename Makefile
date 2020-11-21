@@ -8,9 +8,9 @@ TOOLS_H = $(INCDIR)utils.h $(INCDIR)colors.h
 TOOLS_O = $(BINDIR)utils.o $(BINDIR)colors.o
 TOOLS_R = utils.o colors.o
 
-MYSH_H  = $(TOOLS_H) $(INCDIR)redirections.h $(INCDIR)builtin.h 
-MYSH_O  = $(TOOLS_O) $(BINDIR)redirections.o $(BINDIR)builtin.o
-MYSH_R  = $(TOOLS_R) redirections.o builtin.o
+MYSH_H  = $(TOOLS_H) $(INCDIR)redirections.h $(INCDIR)myls.h $(INCDIR)builtin.h 
+MYSH_O  = $(TOOLS_O) $(BINDIR)redirections.o $(BINDIR)myls_fct.o $(BINDIR)builtin.o
+MYSH_R  = $(TOOLS_R) redirections.o myls_fct.o builtin.o
 
 .PHONY: all
 all: myps myls mysh
@@ -24,20 +24,23 @@ colors.o: $(SRCDIR)colors.c $(INCDIR)colors.h
 redirections.o: $(SRCDIR)redirections.c $(INCDIR)redirections.h $(INCDIR)utils.h $(INCDIR)mysh.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-builtin.o: $(SRCDIR)builtin.c $(INCDIR)utils.h $(INCDIR)builtin.h
+builtin.o: $(SRCDIR)builtin.c $(INCDIR)utils.h $(INCDIR)myls.h $(INCDIR)builtin.h 
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+
+myls_fct.o: $(SRCDIR)myls_fct.c $(INCDIR)myls.h 
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
 myls.o: $(SRCDIR)myls.c $(INCDIR)myls.h 
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-mysh.o: $(SRCDIR)mysh.c $(INCDIR)mysh.h $(TOOLS_H) $(INCDIR)redirections.h
+mysh.o: $(SRCDIR)mysh.c $(INCDIR)mysh.h $(MYSH_H)
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 	
 myps.o: $(SRCDIR)myps.c $(INCDIR)myps.h $(INCDIR)utils.h $(INCDIR)colors.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
-myls: colors.o  myls.o
-	gcc -o $@ $(BINDIR)colors.o $(BINDIR)myls.o
+myls: colors.o  myls.o myls_fct.o
+	gcc -o $@ $(BINDIR)colors.o $(BINDIR)myls.o $(BINDIR)myls_fct.o
 
 mysh: $(MYSH_R) mysh.o 
 	gcc -o $@ $(MYSH_O) $(BINDIR)mysh.o

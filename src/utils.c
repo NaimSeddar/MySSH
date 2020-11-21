@@ -45,9 +45,10 @@ char **str_split(char *str, const char delimiter)
             *(result + idx++) = strdup(token);
             token = strtok(0, delim);
         }
-        *(result + idx) = 0;
+        *(result + idx) = NULL;
     }
-
+    // free(str);
+    // free(tmp);
     return result;
 }
 
@@ -99,7 +100,7 @@ char **str_splitv2(char *str, const char *delimiter)
         result[i] = malloc(sizeof(char) * len_str);
         strncpy(result[0], str, len_str);
     }
-
+    // free(str);
     return result;
 }
 /*
