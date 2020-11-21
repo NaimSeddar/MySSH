@@ -30,3 +30,5 @@ int and_op(char *command);
 int or_op(char *command);
 
 int pipeline(char *command);
+
+void search_replace_var(char **commands);

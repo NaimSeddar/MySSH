@@ -39,6 +39,7 @@ int systemV2(char *command)
     if (!b_in)
         return b_in;
     printf("Builint : %d\n", b_in);
+    search_replace_var(commands);
     pid_t pid = fork();
     cmd_pid = pid;
 
@@ -241,6 +242,18 @@ int pipeline(char *command)
     }
 
     return ERR;
+}
+
+void search_replace_var(char **commands)
+{
+    for (int i = 0; *(commands + i); i++)
+    {
+        if (*(commands + i)[0] == '$')
+        {
+            *(commands + i) = getenv(++(*(commands + i)));
+            printf("var: %s\n", *(commands + i));
+        }
+    }
 }
 
 void printprompt()

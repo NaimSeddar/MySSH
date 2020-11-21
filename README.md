@@ -16,7 +16,7 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Lancer un prog en background  
     [ ] Commande interne myjobs  
     [ ] Passer une commande de foreground à background (et inversement)  
-    [ ] Prendre en charge des variables (locale et d'environnement) 
+    [x] Prendre en charge des variables   
     [x] Utliser myls  
     [x] Utliser myps  
 

@@ -15,13 +15,24 @@ int cd(char *path)
     return res;
 }
 
+int set_var(char *var)
+{
+    if (var != NULL)
+        return putenv(var);
+    else
+        return 1;
+}
+
+int unset_var(char *var)
+{
+    if (var != NULL)
+        return unsetenv(var);
+    else
+        return 1;
+}
+
 int builtin_parser(char **command_line)
 {
-    /*if (arg == NULL)
-    {
-        printf("NULL !\n");
-        // exit(1);
-    }*/
     remove_whitespaces(command_line[0]);
     if (strncmp(command_line[0], "cd", 2) == 0)
     {
@@ -42,5 +53,14 @@ int builtin_parser(char **command_line)
     {
         return myps();
     }
+    else if (strncmp(command_line[0], "set", 3) == 0)
+    {
+        return set_var(command_line[1]);
+    }
+    else if (strncmp(command_line[0], "unset", 5) == 0)
+    {
+        return unset_var(command_line[1]);
+    }
+
     return 1;
 }
