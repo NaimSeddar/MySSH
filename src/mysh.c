@@ -38,11 +38,10 @@ int systemV2(char *command)
     int b_in = builtin_parser(commands);
     if (!b_in)
         return b_in;
-    printf("Builint : %d\n", b_in);
+    // printf("Builint : %d\n", b_in);
     search_replace_var(commands);
     pid_t pid = fork();
     cmd_pid = pid;
-
     if (pid == ERR)
     {
         perror("Fork");
@@ -51,22 +50,28 @@ int systemV2(char *command)
 
     if (!pid)
     {
-        pid_t pgid = getpid();
-        setpgid(getpid(), pgid);
+
+        // pid_t pgid = getpid();
+        // setpgid(getpid(), pgid);
         // Put to sleep exec
         // tcsetpgrp(STDIN_FILENO, pgid);
-        printf("child pid : %d\n", getpid());
+        // printf("child pid : %d\n", getpid());
         // execl("/bin/sh", "sh", "-c", command, (const char *)0);
-        execvp(*commands, commands);
-
-        fprintf(stderr, "%s: Unknown command\n", *commands);
-        perror("");
-        // perror("execvp failed");
-        while (*commands != NULL)
+        if (execvp(*commands, commands) == -1)
         {
-            free(*(commands++));
+            fprintf(stderr, "%s: Unknown command\n", *commands);
+            perror("");
+        }
+        else
+        {
+            while (*commands != NULL)
+            {
+                free(*(commands++));
+            }
         }
         free(commands);
+
+        // perror("execvp failed");
         exit(FAILED_EXEC);
     }
 
@@ -80,6 +85,11 @@ int systemV2(char *command)
         perror("wait");
         return ERR;
     }
+    // if (waitpid(pid, &status, WNOHANG) == ERR)
+    // {
+    //     perror("wait");
+    //     return ERR;
+    // }
 
     if (WIFEXITED(status))
     {
@@ -93,11 +103,11 @@ int parser(char *command)
 {
     int res;
     char **commands = str_split(command, ';');
-    printf("Entrer parser (%s)\n", *commands);
+    // printf("Entrer parser (%s)\n", *commands);
     for (int i = 0; *(commands + i); i++)
     {
         // printf("blabla haut\n");
-        printf("Loop parser (%d : %s)\n", i, *(commands + i));
+        // printf("Loop parser (%d : %s)\n", i, *(commands + i));
 
         /* Check if there's a pipe*/
         if (strstr(*(commands + i), "||") != NULL)
