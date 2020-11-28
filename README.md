@@ -6,19 +6,19 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
 ### Fonctionnalités :
     [x] Petit prompt sympa
     [x] Changer de répertoire (cd)  
-    [ ] Commande "status" 
     [x] Les signaux  
     [x] Enchainement de commande via les ";"  
     [x] Application des && et ||  
-    [ ] Wildcards  
+    [x] Wildcards  
     [x] Pipeliner bien comme il faut  
     [x] Redirection vers ou depuis un fichier (>, >>, 2>, 2>>, >&, >>&, <)  
-    [ ] Lancer un prog en background  
-    [ ] Commande interne myjobs  
-    [ ] Passer une commande de foreground à background (et inversement)  
     [x] Prendre en charge des variables   
     [x] Utliser myls  
     [x] Utliser myps  
+    [ ] Commande "status" 
+    [ ] Lancer un prog en background  
+    [ ] Commande interne myjobs  
+    [ ] Passer une commande de foreground à background (et inversement)  
 
 
 ## *myls (ls -l)*
