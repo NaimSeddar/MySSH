@@ -132,7 +132,7 @@ void ls(char *path, int a, int r)
         strcpy(fpath, path);
         if (fpath[strlen(fpath) - 1] != '/')
         {
-            strncat(fpath, "/", 1);
+            strncat(fpath, "/", 2);
         }
         strcat(fpath, files[i]->d_name);
         lstat(fpath, &fileInfo);

@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <glob.h>
 
 #include "../includes/utils.h"
 #include "../includes/colors.h"

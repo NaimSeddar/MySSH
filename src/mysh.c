@@ -38,7 +38,6 @@ int systemV2(char *command)
     int b_in = builtin_parser(commands);
     if (!b_in)
         return b_in;
-    // printf("Builint : %d\n", b_in);
     search_replace_var(commands);
     pid_t pid = fork();
     cmd_pid = pid;
@@ -51,34 +50,61 @@ int systemV2(char *command)
     if (!pid)
     {
 
-        // pid_t pgid = getpid();
-        // setpgid(getpid(), pgid);
-        // Put to sleep exec
-        // tcsetpgrp(STDIN_FILENO, pgid);
-        // printf("child pid : %d\n", getpid());
-        // execl("/bin/sh", "sh", "-c", command, (const char *)0);
-        if (execvp(*commands, commands) == -1)
+        if (commands[1] == NULL)
         {
-            fprintf(stderr, "%s: Unknown command\n", *commands);
-            perror("");
+            if (execvp(*commands, commands) == -1)
+            {
+                fprintf(stderr, "%s: Unknown command\n", *commands);
+                perror("");
+            }
+            else
+            {
+                while (*commands != NULL)
+                {
+                    free(*(commands++));
+                }
+            }
         }
         else
         {
-            while (*commands != NULL)
+            glob_t glob_buffer = {0};
+            int r;
+            glob_buffer.gl_offs = 1;
+
+            r = glob(commands[1], GLOB_DOOFFS | GLOB_NOCHECK, NULL, &glob_buffer);
+            if (r != 0)
             {
-                free(*(commands++));
+                perror("glob");
+                exit(EXIT_FAILURE);
+            }
+
+            for (int i = 2; *(commands + i); i++)
+            {
+                if ((r = glob(*(commands + i), GLOB_DOOFFS | GLOB_NOCHECK | GLOB_APPEND, NULL, &glob_buffer)) != 0)
+                {
+                    perror("glob");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            glob_buffer.gl_pathv[0] = *commands;
+            if (execvp(glob_buffer.gl_pathv[0], &glob_buffer.gl_pathv[0]) == -1)
+            {
+                fprintf(stderr, "%s: Unknown command\n", *commands);
+                perror("");
+            }
+            else
+            {
+                while (*commands != NULL)
+                {
+                    free(*(commands++));
+                }
             }
         }
+
         free(commands);
 
-        // perror("execvp failed");
         exit(FAILED_EXEC);
     }
-
-    // pid_t pgid = pid;
-    // setpgid(pid, pgid);
-    // Put to sleep mysh
-    // tcsetpgrp(STDIN_FILENO, pgid);
 
     if (wait(&status) == ERR)
     {
