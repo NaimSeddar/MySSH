@@ -49,7 +49,6 @@ int systemV2(char *command)
 
     if (!pid)
     {
-
         if (commands[1] == NULL)
         {
             if (execvp(*commands, commands) == -1)

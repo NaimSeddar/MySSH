@@ -5,14 +5,16 @@
 
 int cd(char *path)
 {
-    int res;
     if (path == NULL)
     {
         path = getenv("HOME");
     }
-    res = chdir(path);
+    if (chdir(path) == ERR)
+    {
+        perror("cd");
+    }
     // free(path);
-    return res;
+    return 0;
 }
 
 int set_var(char *var)
