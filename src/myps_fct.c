@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              28/10/2020 11:20:34
+ * Dernière modification: 20/12/2020 12:26:34
+ * Master 1 Informatique
+ */
+
 #include "../includes/myps.h"
 #include "../includes/utils.h"
 #include "../includes/colors.h"

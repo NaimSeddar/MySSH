@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              24/10/2020 20:59:37
+ * Dernière modification: 20/12/2020 12:26:51
+ * Master 1 Informatique
+ */
+
 #include "../includes/mysh.h"
 
 pid_t cmd_pid = -1;

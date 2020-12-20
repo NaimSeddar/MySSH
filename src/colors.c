@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              25/10/2020 13:07:23
+ * Dernière modification: 20/12/2020 12:24:54
+ * Master 1 Informatique
+ */
+
 #include "../includes/colors.h"
 
 void grayBG()

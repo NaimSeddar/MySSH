@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              09/11/2020 13:34:02
+ * Dernière modification: 20/12/2020 12:27:54
+ * Master 1 Informatique
+ */
+
 #include "../includes/utils.h"
 
 /*

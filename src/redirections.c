@@ -1,12 +1,12 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              16/11/2020 12:04:13
+ * Dernière modification: 20/12/2020 12:27:37
+ * Master 1 Informatique
+ */
+
 #include "../includes/redirections.h"
 #include "../includes/mysh.h"
-
-/*
- *  TODO:
- *      >&      redirige la stdin et la stderr de la commande vers le fichier. O_TRUNC 
- *      >>&     redirige la stdin et la stderr de la commande vers le fichier. O_APPEND 
- *      <       redirige l"entrée standard de la commande vers stdin 
- */
 
 /*
  * commande >> fichier
