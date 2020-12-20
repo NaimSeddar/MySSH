@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              28/10/2020 10:19:34
+ * Dernière modification: 20/12/2020 12:23:00
+ * Master 1 Informatique
+ */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif

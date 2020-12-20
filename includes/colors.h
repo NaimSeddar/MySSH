@@ -1,3 +1,10 @@
+/**
+ * Auteur:                Seddar Naïm
+ * Création:              25/10/2020 12:27:36
+ * Dernière modification: 20/12/2020 12:22:32
+ * Master 1 Informatique
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
