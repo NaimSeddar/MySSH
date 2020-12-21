@@ -1,18 +1,24 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 20/12/2020 12:23:32
+ * Dernière modification: 21/12/2020 16:58:12
  * Master 1 Informatique
  */
 
-#ifndef UDP_CLIENT_H
-#define UDP_CLIENT_H
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
+#ifndef TCP_CLIENT_H
+#define TCP_CLIENT_H
 
 #include <zconf.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
 
 struct client
 {

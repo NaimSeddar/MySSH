@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 19/12/2020 15:29:18
+ * Dernière modification: 21/12/2020 16:58:47
  * Master 1 Informatique
  */
 
@@ -13,6 +13,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <stdio.h>
+#include <memory.h>
+#include <stdlib.h>
+#include <wait.h>
+#include <signal.h>
 
 struct server
 {

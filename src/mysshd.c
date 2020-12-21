@@ -1,31 +1,34 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              01/12/2020 18:17:34
- * Dernière modification: 19/12/2020 17:30:54
+ * Dernière modification: 21/12/2020 17:09:42
  * Master 1 Informatique
  */
-
-#include <stdio.h>
-#include <memory.h>
-#include <pthread.h>
-#include <stdlib.h>
-#include <wait.h>
+#include <signal.h>
+#include <errno.h>
 #include "../includes/myssh-server.h"
 #define MAX 500
 #define str(x) #x
 
 int sockets[SOMAXCONN];
 
+void signal_callback_handler(int signum)
+{
+    printf("SIGNAL RECEPTIONNE (child: ) \n");
+    waitpid(-1, NULL, WNOHANG);
+    wait(NULL);
+}
+
 int main()
 {
-
+    signal(SIGCHLD, signal_callback_handler);
     int i = 0;
     int status;
 
-    Server server1 = server_create_tcp();
-    server1->server_bind(server1, 1344);
+    Server daemon = server_create_tcp();
+    daemon->server_bind(daemon, 1344);
 
-    if (listen(server1->socket, SOMAXCONN) == -1)
+    if (listen(daemon->socket, SOMAXCONN) == -1)
     {
         exit(EXIT_FAILURE);
     }
@@ -34,28 +37,29 @@ int main()
 
     for (;;)
     {
-        int t = i;
-        sockets[i] = accept(server1->socket, (struct sockaddr *)&server1->clientAddr, &server1->len);
-        printf("Accepted client %d\n", sockets[i]);
         pid_t pid;
-        // pthread_t thread1;
-        // pthread_create(&thread1, NULL, server_launch, &sockets[t]);
-        // pthread_detach(thread1);
+        int t = i;
+        sockets[i] = accept(daemon->socket, (struct sockaddr *)&daemon->clientAddr, &daemon->len);
+        printf("Accepted client %d\n", sockets[i]);
+
         if ((pid = fork()) == 0)
         {
+            close(daemon->socket);
             char buff[5];
             sprintf(buff, "%d", sockets[t]);
             execl("./myssh-server", "myssh-server", buff, (void *)0);
+            exit(EXIT_SUCCESS);
         }
 
-        if (waitpid(pid, &status, WNOHANG) == -1)
+        if (waitpid(-1, &status, WNOHANG) == -1)
         {
             perror("wait");
         }
+
         i++;
     }
 
-    server_destroy(server1);
+    server_destroy(daemon);
 
     return 0;
 }

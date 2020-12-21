@@ -1,13 +1,10 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 19/12/2020 15:29:42
+ * Dernière modification: 21/12/2020 13:54:33
  * Master 1 Informatique
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory.h>
 #include "../includes/myssh-server.h"
 #include "../includes/error.h"
 
@@ -37,6 +34,7 @@ void server_send_tcp2(int socket, char *msg)
     if (send(socket, msg, strlen(msg), MSG_NOSIGNAL) == -1)
     {
         syserror(SEND_ERR);
+        exit(EXIT_SUCCESS);
     }
 }
 
