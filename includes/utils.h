@@ -1,12 +1,12 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              09/11/2020 13:35:46
- * Dernière modification: 20/12/2020 12:23:52
+ * Dernière modification: 21/12/2020 12:55:28
  * Master 1 Informatique
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
 #endif
 #include <stdlib.h>
 #include <string.h>

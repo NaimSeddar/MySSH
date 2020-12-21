@@ -1,11 +1,13 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              08/11/2020 14:10:29
- * Dernière modification: 21/12/2020 12:42:31
+ * Dernière modification: 21/12/2020 12:46:13
  * Master 1 Informatique
  */
 
+#ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
