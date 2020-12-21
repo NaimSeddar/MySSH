@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              01/12/2020 18:17:34
- * Dernière modification: 21/12/2020 17:09:42
+ * Dernière modification: 21/12/2020 17:34:04
  * Master 1 Informatique
  */
 #include <signal.h>
@@ -33,7 +33,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    printf("Listen OK\n");
+    printf("Daemon à l'écoute...\n");
 
     for (;;)
     {

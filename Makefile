@@ -73,6 +73,8 @@ mysshd: error.o myssh-server.o mysshd.o
 
 myssh-server: error.o myssh-server.o myssh-server_main.o
 	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)myssh-server_main.o
+	sudo chown root $@
+	sudo chmod a+s $@
 
 
 myls: colors.o myls.o myls_fct.o
