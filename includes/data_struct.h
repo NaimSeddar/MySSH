@@ -1,13 +1,16 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              03/12/2020 20:29:09
- * Dernière modification: 22/12/2020 13:38:30
+ * Dernière modification: 22/12/2020 14:54:54
  * Master 1 Informatique
  */
 
 #define SSH_MSG_USERAUTH_REQUEST 50
 #define SSH_MSG_USERAUTH_FAILURE 51
 #define SSH_MSG_USERAUTH_SUCCESS 52
+#define SSH_MSG_CHANNEL_REQUEST 98
+#define SSH_MSG_CHANNEL_SUCCESS 99
+#define SSH_MSG_CHANNEL_FAILURE 100
 
 struct auth_data
 {
