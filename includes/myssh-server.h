@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 22/12/2020 12:20:51
+ * Dernière modification: 22/12/2020 16:06:37
  * Master 1 Informatique
  */
 
@@ -18,6 +18,9 @@
 #include <stdlib.h>
 #include <wait.h>
 #include <signal.h>
+#include <pwd.h>
+#include <shadow.h>
+#include <crypt.h>
 
 struct server
 {
@@ -38,6 +41,7 @@ Server server_create_tcp();
 void server_destroy(Server this);
 void server_send_tcp(int socket, void *data, size_t data_size);
 ssize_t server_receive_tcp(int socket, void *data, size_t size);
-// void *ping(void *p_data);
+struct auth_data_response check_credentials(char *username, char *clear_password);
+void authenticate_client(int s);
 
 #endif

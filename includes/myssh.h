@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 22/12/2020 13:31:02
+ * Dernière modification: 22/12/2020 21:27:54
  * Master 1 Informatique
  */
 
@@ -19,6 +19,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <termios.h>
+
+#define SIZE 1024
 
 struct client
 {
@@ -34,5 +37,9 @@ typedef struct client *Client;
 
 Client client_create_tcp(char *addr, int port);
 void client_destroy(Client this);
+void getstdin(char *buffer, const char *prompt);
+void getpassword(char *buffer);
+void authenticate_to_server(Client this, char *username);
+char *string_fusion(char **strings);
 
 #endif

@@ -49,7 +49,7 @@ error.o: $(SRCDIR)error.c $(INCDIR)error.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
 myssh_main.o: $(SRCDIR)myssh_main.c $(INCDIR)myssh.h 
-	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $< 
 
 myssh.o: $(SRCDIR)myssh.c $(INCDIR)myssh.h 
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
@@ -58,10 +58,10 @@ mysshd.o: $(SRCDIR)mysshd.c $(SRCDIR)myssh-server.c $(INCDIR)myssh-server.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
 
 myssh-server_main.o: $(SRCDIR)myssh-server_main.c $(INCDIR)myssh-server.h
-	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $< 
 
 myssh-server.o: $(SRCDIR)myssh-server.c $(INCDIR)myssh-server.h 
-	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<
+	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $< 
 
 
 
@@ -69,7 +69,7 @@ myssh: error.o myssh.o myssh_main.o
 	$(CC) $(CFLAGS) -o $@ $(BINDIR)myssh.o $(BINDIR)myssh_main.o $(BINDIR)error.o
 
 mysshd: error.o myssh-server.o mysshd.o
-	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)mysshd.o
+	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)mysshd.o -lcrypt
 
 myssh-server: error.o myssh-server.o myssh-server_main.o
 	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)myssh-server_main.o -lcrypt
