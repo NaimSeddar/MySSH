@@ -45,3 +45,14 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [x] Start  
     [x] Time  
     [x] Command  
+
+## *Partie réseau*
+### Fonctionnalités :
+    [x] Connexion multi-clients  
+    [x] Connexion via le daemon  
+    [x] Authentification (shadow password)  
+    [x] Protocole d'authentification  
+    [ ] Execution de commande sur le serveur
+    [ ] Redirection du stdout sur la socket (mysh)
+    [ ] Protocole execution de commande
+    [ ]
