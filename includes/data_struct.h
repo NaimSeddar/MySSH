@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              03/12/2020 20:29:09
- * Dernière modification: 19/12/2020 12:13:03
+ * Dernière modification: 22/12/2020 13:38:30
  * Master 1 Informatique
  */
 
@@ -16,4 +16,10 @@ struct auth_data
     char service_name[256];
     char method_name[128];
     char specific_method_fields[1024];
+};
+
+struct auth_data_response
+{
+    int ssh_request;
+    char message[128];
 };

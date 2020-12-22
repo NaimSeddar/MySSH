@@ -72,7 +72,7 @@ mysshd: error.o myssh-server.o mysshd.o
 	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)mysshd.o
 
 myssh-server: error.o myssh-server.o myssh-server_main.o
-	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)myssh-server_main.o
+	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh-server.o $(BINDIR)myssh-server_main.o -lcrypt
 	sudo chown root $@
 	sudo chmod a+s $@
 

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 21/12/2020 13:54:33
+ * Dernière modification: 22/12/2020 13:07:52
  * Master 1 Informatique
  */
 
@@ -11,6 +11,7 @@
 #define neterr_server(srv, n) server_destroy(srv), syserror(n);
 #define MAX 500
 
+/*
 static ssize_t server_receive_tcp(struct server *this, char *buf, size_t size)
 {
     return recv(this->acceptedSocket, buf, size, 0);
@@ -22,16 +23,16 @@ static void server_send_tcp(struct server *this, char *msg)
     {
         neterr_server(this, SEND_ERR);
     }
+}*/
+
+ssize_t server_receive_tcp(int socket, void *data, size_t size)
+{
+    return recv(socket, data, size, 0);
 }
 
-ssize_t server_receive_tcp2(int socket, char *buf, size_t size)
+void server_send_tcp(int socket, void *data, size_t data_size)
 {
-    return recv(socket, buf, size, 0);
-}
-
-void server_send_tcp2(int socket, char *msg)
-{
-    if (send(socket, msg, strlen(msg), MSG_NOSIGNAL) == -1)
+    if (send(socket, data, data_size, MSG_NOSIGNAL) == -1)
     {
         syserror(SEND_ERR);
         exit(EXIT_SUCCESS);
@@ -62,8 +63,8 @@ Server server_create_tcp()
 
     srv->socket = sfd;
     srv->server_bind = &server_bind;
-    srv->server_receive = &server_receive_tcp;
-    srv->server_send = &server_send_tcp;
+    // srv->server_receive = &server_receive_tcp;
+    // srv->server_send = &server_send_tcp;
     memset(&srv->servAddr, 0, sizeof(struct sockaddr_in));
     memset(&srv->clientAddr, 0, sizeof(struct sockaddr_in));
     srv->len = sizeof(struct sockaddr_in);

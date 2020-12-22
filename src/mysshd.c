@@ -1,20 +1,19 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              01/12/2020 18:17:34
- * Dernière modification: 21/12/2020 17:34:04
+ * Dernière modification: 22/12/2020 12:10:10
  * Master 1 Informatique
  */
 #include <signal.h>
-#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include "../includes/myssh-server.h"
-#define MAX 500
-#define str(x) #x
 
 int sockets[SOMAXCONN];
 
 void signal_callback_handler(int signum)
 {
-    printf("SIGNAL RECEPTIONNE (child: ) \n");
+    // printf("SIGNAL RECEPTIONNE (child: ) \n");
     waitpid(-1, NULL, WNOHANG);
     wait(NULL);
 }
@@ -33,14 +32,24 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    printf("Daemon à l'écoute...\n");
+    // int devnull = open("/dev/null", O_WRONLY);
+    // if (devnull == -1)
+    // {
+    //     perror("Failure /dev/null");
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // dup2(devnull, fileno(stdout));
+    // dup2(devnull, fileno(stderr));
+
+    // printf("Daemon à l'écoute...\n");
 
     for (;;)
     {
         pid_t pid;
         int t = i;
         sockets[i] = accept(daemon->socket, (struct sockaddr *)&daemon->clientAddr, &daemon->len);
-        printf("Accepted client %d\n", sockets[i]);
+        // printf("Accepted client %d\n", sockets[i]);
 
         if ((pid = fork()) == 0)
         {
@@ -58,6 +67,8 @@ int main()
 
         i++;
     }
+
+    // close(devnull);
 
     server_destroy(daemon);
 

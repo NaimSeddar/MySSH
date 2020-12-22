@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 21/12/2020 16:58:12
+ * Dernière modification: 22/12/2020 13:31:02
  * Master 1 Informatique
  */
 
@@ -26,8 +26,8 @@ struct client
     struct sockaddr_in clientAddr;
     socklen_t len;
 
-    ssize_t (*client_receive)(struct client *this, char *buf, size_t size);
-    void (*client_send)(struct client *this, char *msg);
+    ssize_t (*client_receive)(struct client *this, void *data, size_t size);
+    void (*client_send)(struct client *this, void *data, size_t size);
 };
 
 typedef struct client *Client;

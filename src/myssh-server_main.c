@@ -1,61 +1,97 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 21/12/2020 16:59:15
+ * Dernière modification: 22/12/2020 14:38:48
  * Master 1 Informatique
  */
 
+#include <pwd.h>
+#include <shadow.h>
+#include <crypt.h>
 #include "../includes/myssh-server.h"
 #include "../includes/data_struct.h"
-#define MAX 500
-
-// int sockets[SOMAXCONN];
+#define MAX 1024
 
 void signal_callback_handler(int signum)
 {
     printf("Caught signal SIGPIPE %d\n", signum);
 }
 
-void *ping(int s)
+struct auth_data_response check_credentials(char *username, char *clear_password)
 {
-    // signal(SIGPIPE, signal_callback_handler);
-    // int index = *((int *)p_data) - 1;
-    // int s = sockets[index];
-    printf("(Server) Client : %d\n", s);
-    int n;
-    char *msg = "bien bg";
-    struct auth_data p;
+    struct auth_data_response res;
+    struct passwd *p;
+    struct spwd *sp;
+    char *error_msg = "Invalide username/password...";
+    size_t error_msg_len = strlen(error_msg);
 
-    for (;;)
+    if (setuid(0) == -1)
     {
-        if ((n = recv(s, &p, sizeof(struct auth_data), 0)) == -1)
+        perror("Permissions issues (setuid)");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((p = getpwnam(username)) == NULL)
+    {
+        res.ssh_request = SSH_MSG_USERAUTH_FAILURE;
+        memcpy(res.message, error_msg, error_msg_len + 1);
+        res.message[error_msg_len] = '\0';
+
+        return res;
+    }
+
+    if (strncmp(p->pw_passwd, "x", 1) == 0)
+    {
+        if ((sp = getspnam(username)) == NULL)
         {
-            perror("recv");
+            perror("Permissions issues (shadow password)");
             exit(EXIT_FAILURE);
         }
 
-        p.specific_method_fields[strlen(p.specific_method_fields) - 1] = '\0';
-
-        printf("(Server) J'ai reçu : (%s) de la part de %d\n", p.specific_method_fields, s);
-
-        if (strncmp(p.specific_method_fields, "exit", 4) == 0)
-            break;
-
-        printf("%d\n", p.ssh_request);
-
-        server_send_tcp2(s, msg);
+        p->pw_passwd = sp->sp_pwdp;
     }
-    exit(EXIT_SUCCESS);
-    // printf("JE SORS !");
-    // fflush(stdout);
-    // kill(getpid(), SIGTERM);
+
+    if (strcmp(crypt(clear_password, p->pw_passwd), p->pw_passwd) == 0)
+    {
+        res.ssh_request = SSH_MSG_USERAUTH_SUCCESS;
+        return res;
+    }
+    else
+    {
+        res.ssh_request = SSH_MSG_USERAUTH_FAILURE;
+        memcpy(res.message, error_msg, error_msg_len + 1);
+        res.message[error_msg_len] = '\0';
+
+        return res;
+    }
+}
+
+void authenticate_client(int s)
+{
+    int n;
+    struct auth_data p;
+    struct auth_data_response r;
+
+    if ((n = recv(s, &p, sizeof(struct auth_data), 0)) == -1)
+    {
+        perror("recv");
+        exit(EXIT_FAILURE);
+    }
+
+    r = check_credentials(p.user_name, p.specific_method_fields);
+
+    server_send_tcp(s, &r, sizeof(struct auth_data_response));
 }
 
 int main(int argc, char *argv[])
 {
     signal(SIGPIPE, signal_callback_handler);
-    printf("(Server) argv 1 : %s\n", argv[1]);
-    ping(atoi(argv[1]));
+
+    Server server = server_create_tcp();
+
+    authenticate_client(atoi(argv[1]));
+
+    server_destroy(server);
 
     return 0;
 }

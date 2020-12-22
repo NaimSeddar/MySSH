@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 21/12/2020 13:04:22
+ * Dernière modification: 22/12/2020 13:33:33
  * Master 1 Informatique
  */
 
@@ -10,16 +10,14 @@
 
 #define neterr_client(clt, n) client_destroy(clt), syserror(n);
 
-static ssize_t client_receive_tcp(struct client *this, char *buf, size_t size)
+ssize_t client_receive_tcp(struct client *this, void *data, size_t size_data)
 {
-    if (!buf)
-        return 0;
-    return recv(this->socket, buf, size, 0);
+    return recv(this->socket, data, size_data, MSG_NOSIGNAL);
 }
 
-static void client_send_tcp(struct client *this, char *msg)
+void client_send_tcp(struct client *this, void *data, size_t size_data)
 {
-    if (send(this->socket, msg, strlen(msg), MSG_NOSIGNAL) == ERR)
+    if (send(this->socket, data, size_data, MSG_NOSIGNAL) == ERR)
         neterr_client(this, SEND_ERR);
 }
 
