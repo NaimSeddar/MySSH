@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              03/12/2020 20:29:09
- * Dernière modification: 22/12/2020 14:54:54
+ * Dernière modification: 23/12/2020 14:52:35
  * Master 1 Informatique
  */
 
@@ -23,6 +23,19 @@ struct auth_data
 
 struct auth_data_response
 {
-    int ssh_request;
+    int ssh_answer;
     char message[128];
+};
+
+struct channel_data
+{
+    int ssh_request;
+    char service_name[256]; // exec, shell or signal
+    char command[4096];
+};
+
+struct channel_data_response
+{
+    int ssh_answer;
+    int pcode;
 };

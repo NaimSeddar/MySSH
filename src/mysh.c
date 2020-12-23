@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 20/12/2020 12:26:51
+ * Dernière modification: 23/12/2020 13:57:19
  * Master 1 Informatique
  */
 
@@ -315,7 +315,8 @@ void printprompt()
     currpath[len + 1] = ' ';
     currpath[len + 2] = '\0';
 
-    username = getenv("USER");
+    username = getpwuid(getuid())->pw_name;
+
     if (username != NULL)
     {
         printf(U_RED_C "%s:" RESET_C, username);
@@ -370,6 +371,11 @@ int main(int argv, char *argc[])
         printf("Aucun argument n'est requis pour '%s'\n", argc[1]);
         exit(1);
     }
+
+    struct passwd *pw = getpwnam("naim");
+    setgid(pw->pw_gid);
+    setuid(pw->pw_uid);
+    // seteuid(pw->pw_uid);
 
     mysh();
 

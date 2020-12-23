@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 22/12/2020 21:28:30
+ * Dernière modification: 23/12/2020 14:50:21
  * Master 1 Informatique
  */
 
@@ -98,7 +98,7 @@ void authenticate_to_server(Client this, char *username)
     getpassword(buffer);
 
     p.ssh_request = SSH_MSG_USERAUTH_REQUEST;
-    memcpy(p.user_name, username, strlen(username));
+    memcpy(p.user_name, username, strlen(username) + 1);
     memcpy(p.service_name, "ssh", 4);
     memcpy(p.method_name, "password", 9);
     memcpy(p.specific_method_fields, buffer, sizeof(buffer));
@@ -111,7 +111,7 @@ void authenticate_to_server(Client this, char *username)
         exit(EXIT_FAILURE);
     }
 
-    if (r.ssh_request == SSH_MSG_USERAUTH_FAILURE)
+    if (r.ssh_answer == SSH_MSG_USERAUTH_FAILURE)
     {
         printf("%s\n", r.message);
         client_destroy(this);

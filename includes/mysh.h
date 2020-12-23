@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 10:19:34
- * Dernière modification: 21/12/2020 12:50:21
+ * Dernière modification: 23/12/2020 13:55:32
  * Master 1 Informatique
  */
 
@@ -12,6 +12,7 @@
 #include <string.h>
 #include <signal.h>
 #include <glob.h>
+#include <pwd.h>
 
 #include "../includes/utils.h"
 #include "../includes/colors.h"

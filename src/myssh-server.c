@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 22/12/2020 21:29:12
+ * Dernière modification: 23/12/2020 14:50:12
  * Master 1 Informatique
  */
 
@@ -78,13 +78,27 @@ void server_destroy(Server this)
     free(this);
 }
 
+void update_user(struct passwd *p)
+{
+    setgid(p->pw_gid);
+    setuid(p->pw_uid);
+    // seteuid(p->pw_uid);
+
+    setenv("HOME", p->pw_dir, 0);
+    setenv("USER", p->pw_name, 1);
+    setenv("SHELL", p->pw_shell, 1);
+    setenv("LOGNAME", p->pw_name, 1);
+}
+
 struct auth_data_response check_credentials(char *username, char *clear_password)
 {
     struct auth_data_response res;
     struct passwd *p;
     struct spwd *sp;
     char *error_msg = "Invalid username/password...";
+    char *error_msg2 = "Unknown user";
     size_t error_msg_len = strlen(error_msg);
+    size_t error_msg_len2 = strlen(error_msg2);
 
     if (setuid(0) == -1)
     {
@@ -94,9 +108,9 @@ struct auth_data_response check_credentials(char *username, char *clear_password
 
     if ((p = getpwnam(username)) == NULL)
     {
-        res.ssh_request = SSH_MSG_USERAUTH_FAILURE;
-        memcpy(res.message, error_msg, error_msg_len + 1);
-        res.message[error_msg_len] = '\0';
+        res.ssh_answer = SSH_MSG_USERAUTH_FAILURE;
+        memcpy(res.message, error_msg2, error_msg_len2 + 1);
+        res.message[error_msg_len2] = '\0';
 
         return res;
     }
@@ -114,12 +128,13 @@ struct auth_data_response check_credentials(char *username, char *clear_password
 
     if (strcmp(crypt(clear_password, p->pw_passwd), p->pw_passwd) == 0)
     {
-        res.ssh_request = SSH_MSG_USERAUTH_SUCCESS;
+        res.ssh_answer = SSH_MSG_USERAUTH_SUCCESS;
+        update_user(p);
         return res;
     }
     else
     {
-        res.ssh_request = SSH_MSG_USERAUTH_FAILURE;
+        res.ssh_answer = SSH_MSG_USERAUTH_FAILURE;
         memcpy(res.message, error_msg, error_msg_len + 1);
         res.message[error_msg_len] = '\0';
 

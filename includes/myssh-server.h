@@ -1,10 +1,12 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 22/12/2020 16:06:37
+ * Dernière modification: 23/12/2020 14:22:27
  * Master 1 Informatique
  */
-
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
 #ifndef UDP_SERVER_H
 #define UDP_SERVER_H
 
@@ -42,6 +44,7 @@ void server_destroy(Server this);
 void server_send_tcp(int socket, void *data, size_t data_size);
 ssize_t server_receive_tcp(int socket, void *data, size_t size);
 struct auth_data_response check_credentials(char *username, char *clear_password);
+void update_user(struct passwd *p);
 void authenticate_client(int s);
 
 #endif

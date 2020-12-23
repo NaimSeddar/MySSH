@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 22/12/2020 21:27:03
+ * Dernière modification: 23/12/2020 13:01:22
  * Master 1 Informatique
  */
 
@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     char *addr = strchr(argv[1], '@');
     *(addr++) = '\0';
     char *username = argv[1];
+
+    printf("(%s) at (%s)\n", username, addr);
 
     Client clt = client_create_tcp(addr, 1344);
     int c_arg = 0;
