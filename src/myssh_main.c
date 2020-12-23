@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 22:26:15
+ * Dernière modification: 23/12/2020 22:50:46
  * Master 1 Informatique
  */
 
@@ -33,9 +33,11 @@ void oneshotcmd(Client this, char *command)
         memset(buffer, '\0', 9);
     }*/
     buffer[2] = '\0';
-    while (((n = this->client_receive(this, &buffer, 2)) != 0) || (buffer[0] = '\0'))
+    while ((n = this->client_receive(this, &buffer, 2)) != 0)
     {
         printf("%s", buffer);
+        if (buffer[n - 1] == '\0')
+            break;
     }
 }
 

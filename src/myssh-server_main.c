@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 22:25:52
+ * Dernière modification: 23/12/2020 22:50:01
  * Master 1 Informatique
  */
 
@@ -26,8 +26,7 @@ void getChannel(struct server *this)
 
     printf("(%s) - (%s)\n", ch_d.service_name, ch_d.command);
 
-    printf("\n");
-    putc('\0', stdout);
+    printf("%c", '\0');
 
     fflush(stdout);
     dup2(save, fileno(stdout));
