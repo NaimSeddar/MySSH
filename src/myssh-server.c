@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 14:50:12
+ * Dernière modification: 23/12/2020 16:17:30
  * Master 1 Informatique
  */
 
@@ -26,14 +26,14 @@ static void server_send_tcp(struct server *this, char *msg)
     }
 }*/
 
-ssize_t server_receive_tcp(int socket, void *data, size_t size)
+ssize_t server_receive_tcp(struct server *this, void *data, size_t size)
 {
-    return recv(socket, data, size, 0);
+    return recv(this->socket, data, size, 0);
 }
 
-void server_send_tcp(int socket, void *data, size_t data_size)
+void server_send_tcp(struct server *this, void *data, size_t data_size)
 {
-    if (send(socket, data, data_size, MSG_NOSIGNAL) == -1)
+    if (send(this->socket, data, data_size, MSG_NOSIGNAL) == -1)
     {
         syserror(SEND_ERR);
         exit(EXIT_SUCCESS);
@@ -64,8 +64,8 @@ Server server_create_tcp()
 
     srv->socket = sfd;
     srv->server_bind = &server_bind;
-    // srv->server_receive = &server_receive_tcp;
-    // srv->server_send = &server_send_tcp;
+    srv->server_receive = &server_receive_tcp;
+    srv->server_send = &server_send_tcp;
     memset(&srv->servAddr, 0, sizeof(struct sockaddr_in));
     memset(&srv->clientAddr, 0, sizeof(struct sockaddr_in));
     srv->len = sizeof(struct sockaddr_in);
@@ -130,25 +130,25 @@ struct auth_data_response check_credentials(char *username, char *clear_password
     {
         res.ssh_answer = SSH_MSG_USERAUTH_SUCCESS;
         update_user(p);
-        return res;
     }
     else
     {
         res.ssh_answer = SSH_MSG_USERAUTH_FAILURE;
         memcpy(res.message, error_msg, error_msg_len + 1);
         res.message[error_msg_len] = '\0';
-
-        return res;
     }
+
+    return res;
 }
 
-void authenticate_client(int s)
+void authenticate_client(struct server *this)
 {
     int n;
     struct auth_data p;
     struct auth_data_response r;
 
-    if ((n = recv(s, &p, sizeof(struct auth_data), 0)) == -1)
+    // if ((n = recv(s, &p, sizeof(struct auth_data), 0)) == -1)
+    if ((n = this->server_receive(this, &p, sizeof(struct auth_data))) == -1)
     {
         perror("recv");
         exit(EXIT_FAILURE);
@@ -156,5 +156,12 @@ void authenticate_client(int s)
 
     r = check_credentials(p.user_name, p.specific_method_fields);
 
-    server_send_tcp(s, &r, sizeof(struct auth_data_response));
+    // server_send_tcp(s, &r, sizeof(struct auth_data_response));
+    this->server_send(this, &r, sizeof(struct auth_data_response));
+
+    if (r.ssh_answer == SSH_MSG_USERAUTH_FAILURE)
+    {
+        server_destroy(this);
+        exit(EXIT_FAILURE);
+    }
 }

@@ -56,4 +56,4 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [ ] Redirection du stdout sur la socket (mysh)  
     [ ] Protocole execution de commande  
     [ ] One shot command (-c [command])  
-    
+    [ ] Envp en mémoire partagé

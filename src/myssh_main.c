@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 13:01:22
+ * Dernière modification: 23/12/2020 22:26:15
  * Master 1 Informatique
  */
 
@@ -10,10 +10,33 @@
 
 void oneshotcmd(Client this, char *command)
 {
-    printf("Executons -> (%s)\n", command);
+    // printf("Executons -> (%s)\n", command);
 
-    client_destroy(this);
-    exit(0);
+    struct channel_data ch_d;
+    char buffer[SIZE];
+    int n;
+    ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
+    memcpy(ch_d.service_name, "exec\0", 6);
+    memcpy(ch_d.command, command, strlen(command) + 1);
+
+    this->client_send(this, &ch_d, sizeof(struct channel_data));
+
+    /*while ((n = read(this->socket, buffer, 8)) != -1)
+    {
+    }*/
+    // memset(buffer, '\0', 9);
+    /*while (buffer[0] != '\n' && buffer[1] != '\0')
+    {
+        read(this->socket, buffer, 8);
+        printf("%s", buffer);
+        fflush(stdout);
+        memset(buffer, '\0', 9);
+    }*/
+    buffer[2] = '\0';
+    while (((n = this->client_receive(this, &buffer, 2)) != 0) || (buffer[0] = '\0'))
+    {
+        printf("%s", buffer);
+    }
 }
 
 int main(int argc, char *argv[])
