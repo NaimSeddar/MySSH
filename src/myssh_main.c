@@ -1,33 +1,61 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 14:46:39
+ * Dernière modification: 24/12/2020 16:35:33
  * Master 1 Informatique
  */
 
 #include "../includes/myssh.h"
 #include "../includes/data_struct.h"
+#include "../includes/colors.h"
 
-void oneshotcmd(Client this, char *command)
+void print_pcode(int pcode)
 {
-    // printf("Executons -> (%s)\n", command);
+    printf("%sprocessus distant terminé avec le code %s[%d]%s\n", GREEN_C, YELLOW_C, pcode, RESET_C);
+}
 
-    struct channel_data ch_d;
+void print_socket(Client this)
+{
     char buffer[SIZE];
     int n;
-    ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
-    memcpy(ch_d.service_name, "exec\0", 6);
-    memcpy(ch_d.command, command, strlen(command) + 1);
 
-    this->client_send(this, &ch_d, sizeof(struct channel_data));
+    buffer[SIZE - 1] = '\0';
 
-    buffer[2] = '\0';
     while ((n = this->client_receive(this, &buffer, 2)) != 0)
     {
         printf("%s", buffer);
         if (buffer[n - 1] == '\0')
             break;
     }
+}
+
+void oneshotcmd(Client this, char *command)
+{
+    // printf("Executons -> (%s)\n", command);
+
+    struct channel_data ch_d;
+    struct channel_data_response ch_r;
+    // char buffer[SIZE];
+    // int n;
+    ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
+    memcpy(ch_d.service_name, "exec\0", 6);
+    memcpy(ch_d.command, command, strlen(command) + 1);
+
+    this->client_send(this, &ch_d, sizeof(struct channel_data));
+
+    /*buffer[2] = '\0';
+    while ((n = this->client_receive(this, &buffer, 2)) != 0)
+    {
+        printf("%s", buffer);
+        if (buffer[n - 1] == '\0')
+            break;
+    }*/
+
+    print_socket(this);
+
+    this->client_receive(this, &ch_r, sizeof(struct channel_data_response));
+
+    print_pcode(ch_r.pcode);
 }
 
 int main(int argc, char *argv[])

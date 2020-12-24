@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 14:42:18
+ * Dernière modification: 24/12/2020 16:02:02
  * Master 1 Informatique
  */
 
@@ -81,14 +81,18 @@ void server_destroy(Server this)
 
 void update_user(struct passwd *p)
 {
+
+    // printf("%s -> %s\n", getenv("HOME"), p->pw_dir);
+    setenv("HOME", p->pw_dir, 1);
+    setenv("USER", p->pw_name, 1);
+    // printf("%s -> %s\n", getenv("USER"), p->pw_name);
+    // printf("%s -> %s\n", getenv("SHELL"), p->pw_shell);
+    setenv("SHELL", p->pw_shell, 1);
+    // printf("%s -> %s\n", getenv("LOGNAME"), p->pw_name);
+    setenv("LOGNAME", p->pw_name, 1);
     setgid(p->pw_gid);
     setuid(p->pw_uid);
     seteuid(p->pw_uid);
-
-    setenv("HOME", p->pw_dir, 0);
-    setenv("USER", p->pw_name, 1);
-    setenv("SHELL", p->pw_shell, 1);
-    setenv("LOGNAME", p->pw_name, 1);
 }
 
 struct auth_data_response check_credentials(char *username, char *clear_password)
@@ -170,7 +174,8 @@ void authenticate_client(struct server *this)
 void getChannel(struct server *this)
 {
     struct channel_data ch_d;
-    int save;
+    struct channel_data_response ch_r;
+    int save, n;
 
     this->server_receive(this, &ch_d, sizeof(struct channel_data));
 
@@ -179,7 +184,7 @@ void getChannel(struct server *this)
 
     // printf("(%s) - (%s)\n", ch_d.service_name, ch_d.command);
 
-    parser(ch_d.command);
+    n = parser(ch_d.command);
 
     printf("%c", '\0');
 
@@ -189,5 +194,8 @@ void getChannel(struct server *this)
 
     clearerr(stdout);
 
-    // this->server_send(this, '\0', 1);
+    ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
+    ch_r.pcode = n;
+
+    this->server_send(this, &ch_r, sizeof(struct channel_data_response));
 }

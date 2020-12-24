@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 24/12/2020 14:26:40
+ * Dernière modification: 24/12/2020 15:21:35
  * Master 1 Informatique
  */
 
@@ -38,6 +38,7 @@ int systemV2(char *command)
 
     if (!pid)
     {
+        printf("Je suis -> %s\n", getenv("USER"));
         if (commands[1] == NULL)
         {
             if (execvp(*commands, commands) == -1)
@@ -275,7 +276,8 @@ void search_replace_var(char **commands)
         if (*(commands + i)[0] == '$')
         {
             *(commands + i) = getenv(++(*(commands + i)));
-            printf("var: %s\n", *(commands + i));
+            // fflush(stdout);
+            printf("var: %s\n", getenv("USER"));
         }
     }
 }
