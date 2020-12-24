@@ -1,13 +1,14 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 14:50:21
+ * Dernière modification: 24/12/2020 16:42:21
  * Master 1 Informatique
  */
 
 #include "../includes/myssh.h"
 #include "../includes/error.h"
 #include "../includes/data_struct.h"
+#include "../includes/colors.h"
 
 #define neterr_client(clt, n) client_destroy(clt), syserror(n);
 
@@ -123,8 +124,6 @@ void authenticate_to_server(Client this, char *username)
     }
 
     fflush(stdout);
-    // client_destroy(this);
-    // exit(EXIT_FAILURE);
 }
 
 char *string_fusion(char **strings)
@@ -146,4 +145,44 @@ char *string_fusion(char **strings)
     }
 
     return buffer;
+}
+
+void print_pcode(int pcode)
+{
+    printf("%sprocessus distant terminé avec le code %s[%d]%s\n", GREEN_C, YELLOW_C, pcode, RESET_C);
+}
+
+void print_socket(Client this)
+{
+    char buffer[SIZE];
+    int n;
+
+    buffer[SIZE - 1] = '\0';
+
+    while ((n = this->client_receive(this, &buffer, 2)) != 0)
+    {
+        printf("%s", buffer);
+        if (buffer[n - 1] == '\0')
+            break;
+    }
+}
+
+void oneshotcmd(Client this, char *command)
+{
+
+    struct channel_data ch_d;
+    struct channel_data_response ch_r;
+
+    ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
+
+    memcpy(ch_d.service_name, "exec\0", 6);
+    memcpy(ch_d.command, command, strlen(command) + 1);
+
+    this->client_send(this, &ch_d, sizeof(struct channel_data));
+
+    print_socket(this);
+
+    this->client_receive(this, &ch_r, sizeof(struct channel_data_response));
+
+    print_pcode(ch_r.pcode);
 }

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 22/12/2020 21:27:54
+ * Dernière modification: 24/12/2020 16:43:09
  * Master 1 Informatique
  */
 
@@ -41,5 +41,8 @@ void getstdin(char *buffer, const char *prompt);
 void getpassword(char *buffer);
 void authenticate_to_server(Client this, char *username);
 char *string_fusion(char **strings);
+void print_pcode(int pcode);
+void print_socket(Client this);
+void oneshotcmd(Client this, char *command);
 
 #endif
