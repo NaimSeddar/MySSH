@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 16:42:21
+ * Dernière modification: 24/12/2020 22:30:58
  * Master 1 Informatique
  */
 
@@ -185,4 +185,29 @@ void oneshotcmd(Client this, char *command)
     this->client_receive(this, &ch_r, sizeof(struct channel_data_response));
 
     print_pcode(ch_r.pcode);
+}
+
+void command_loop(Client this)
+{
+    struct channel_data ch_d;
+
+    ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
+    memcpy(ch_d.service_name, "shell", 6);
+
+    printf("%sJe vais envoyer dans command_loop\n", GREEN_C);
+    this->client_send(this, &ch_d, SIZEOF_CH_D);
+    printf("%sJ'ai envoyé dans command_loop\n", RED_C);
+
+    printf("%sJe vais recevoir dans command_loop\n", GREEN_C);
+    this->client_receive(this, &ch_d, SIZEOF_CH_D);
+    printf("%sJ'ai reçu dans command_loop\n", RED_C);
+
+    /*if (ch_d.ssh_request == SSH_MSG_CHANNEL_FAILURE)
+    {
+        printf("%sConnexion refusé\n", RED_C);
+        client_destroy(this);
+        exit(EXIT_FAILURE);
+    }*/
+
+    printf("%s%s>\n", YELLOW_C, ch_d.command);
 }

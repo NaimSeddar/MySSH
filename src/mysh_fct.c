@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 24/12/2020 15:21:35
+ * Dernière modification: 24/12/2020 22:01:15
  * Master 1 Informatique
  */
 
@@ -24,10 +24,10 @@ int systemV2(char *command)
 {
     int status;
     char **commands = str_split(command, ' ');
+    search_replace_var(commands);
     int b_in = builtin_parser(commands);
     if (!b_in)
         return b_in;
-    search_replace_var(commands);
     pid_t pid = fork();
     cmd_pid = pid;
     if (pid == ERR)
@@ -38,7 +38,6 @@ int systemV2(char *command)
 
     if (!pid)
     {
-        printf("Je suis -> %s\n", getenv("USER"));
         if (commands[1] == NULL)
         {
             if (execvp(*commands, commands) == -1)
@@ -299,7 +298,8 @@ void printprompt()
     currpath[len + 1] = ' ';
     currpath[len + 2] = '\0';
 
-    username = getpwuid(getuid())->pw_name;
+    // username = getpwuid(getuid())->pw_name;
+    username = getenv("USER");
 
     if (username != NULL)
     {

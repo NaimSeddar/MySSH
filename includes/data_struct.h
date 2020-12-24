@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              03/12/2020 20:29:09
- * Dernière modification: 24/12/2020 14:32:37
+ * Dernière modification: 24/12/2020 19:09:28
  * Master 1 Informatique
  */
 
@@ -14,6 +14,8 @@
 #define SSH_MSG_CHANNEL_REQUEST 98
 #define SSH_MSG_CHANNEL_SUCCESS 99
 #define SSH_MSG_CHANNEL_FAILURE 100
+
+#define SIZEOF_CH_D sizeof(struct channel_data)
 
 struct auth_data
 {
@@ -41,6 +43,12 @@ struct channel_data_response
 {
     int ssh_answer;
     int pcode;
+};
+
+struct loop_data
+{
+    int ssh_request;
+    char command[4096];
 };
 
 #endif

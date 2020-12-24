@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 16:44:53
+ * Dernière modification: 24/12/2020 21:58:25
  * Master 1 Informatique
  */
 
@@ -48,6 +48,10 @@ int main(int argc, char *argv[])
         char *command = string_fusion(argv + i + 1);
         oneshotcmd(clt, command);
         free(command);
+    }
+    else
+    {
+        command_loop(clt);
     }
 
     client_destroy(clt);

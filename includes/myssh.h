@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 24/12/2020 16:43:09
+ * Dernière modification: 24/12/2020 21:58:17
  * Master 1 Informatique
  */
 
@@ -44,5 +44,6 @@ char *string_fusion(char **strings);
 void print_pcode(int pcode);
 void print_socket(Client this);
 void oneshotcmd(Client this, char *command);
+void command_loop(Client this);
 
 #endif
