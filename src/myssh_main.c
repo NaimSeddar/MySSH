@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 22:50:46
+ * Dernière modification: 24/12/2020 14:46:39
  * Master 1 Informatique
  */
 
@@ -21,17 +21,6 @@ void oneshotcmd(Client this, char *command)
 
     this->client_send(this, &ch_d, sizeof(struct channel_data));
 
-    /*while ((n = read(this->socket, buffer, 8)) != -1)
-    {
-    }*/
-    // memset(buffer, '\0', 9);
-    /*while (buffer[0] != '\n' && buffer[1] != '\0')
-    {
-        read(this->socket, buffer, 8);
-        printf("%s", buffer);
-        fflush(stdout);
-        memset(buffer, '\0', 9);
-    }*/
     buffer[2] = '\0';
     while ((n = this->client_receive(this, &buffer, 2)) != 0)
     {

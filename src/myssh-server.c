@@ -1,13 +1,14 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 16:17:30
+ * Dernière modification: 24/12/2020 14:42:18
  * Master 1 Informatique
  */
 
 #include "../includes/myssh-server.h"
 #include "../includes/error.h"
 #include "../includes/data_struct.h"
+#include "../includes/mysh.h"
 
 #define neterr_server(srv, n) server_destroy(srv), syserror(n);
 #define MAX 500
@@ -82,7 +83,7 @@ void update_user(struct passwd *p)
 {
     setgid(p->pw_gid);
     setuid(p->pw_uid);
-    // seteuid(p->pw_uid);
+    seteuid(p->pw_uid);
 
     setenv("HOME", p->pw_dir, 0);
     setenv("USER", p->pw_name, 1);
@@ -164,4 +165,29 @@ void authenticate_client(struct server *this)
         server_destroy(this);
         exit(EXIT_FAILURE);
     }
+}
+
+void getChannel(struct server *this)
+{
+    struct channel_data ch_d;
+    int save;
+
+    this->server_receive(this, &ch_d, sizeof(struct channel_data));
+
+    save = dup(fileno(stdout));
+    dup2(this->socket, fileno(stdout));
+
+    // printf("(%s) - (%s)\n", ch_d.service_name, ch_d.command);
+
+    parser(ch_d.command);
+
+    printf("%c", '\0');
+
+    fflush(stdout);
+    dup2(save, fileno(stdout));
+    close(save);
+
+    clearerr(stdout);
+
+    // this->server_send(this, '\0', 1);
 }

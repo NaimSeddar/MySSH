@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 10:19:34
- * Dernière modification: 23/12/2020 13:55:32
+ * Dernière modification: 24/12/2020 13:32:40
  * Master 1 Informatique
  */
 
@@ -41,3 +41,7 @@ int or_op(char *command);
 int pipeline(char *command);
 
 void search_replace_var(char **commands);
+
+void printprompt();
+
+void mysh();

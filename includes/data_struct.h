@@ -1,9 +1,12 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              03/12/2020 20:29:09
- * Dernière modification: 23/12/2020 14:52:35
+ * Dernière modification: 24/12/2020 14:32:37
  * Master 1 Informatique
  */
+
+#ifndef DATA_STRUCT
+#define DATA_STRUCT
 
 #define SSH_MSG_USERAUTH_REQUEST 50
 #define SSH_MSG_USERAUTH_FAILURE 51
@@ -39,3 +42,5 @@ struct channel_data_response
     int ssh_answer;
     int pcode;
 };
+
+#endif

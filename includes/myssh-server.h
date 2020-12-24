@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 23/12/2020 16:07:22
+ * Dernière modification: 24/12/2020 14:27:38
  * Master 1 Informatique
  */
 #ifndef _DEFAULT_SOURCE
@@ -46,5 +46,6 @@ ssize_t server_receive_tcp(struct server *this, void *data, size_t size);
 struct auth_data_response check_credentials(char *username, char *clear_password);
 void update_user(struct passwd *p);
 void authenticate_client(struct server *this);
+void getChannel(struct server *this);
 
 #endif

@@ -1,13 +1,17 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              09/11/2020 13:35:46
- * Dernière modification: 21/12/2020 12:55:28
+ * Dernière modification: 24/12/2020 14:29:32
  * Master 1 Informatique
  */
+
+#ifndef UTILS
+#define UTILS
 
 #ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
 #endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -32,3 +36,5 @@ void remove_whitespaces(char *str);
  * File into string
  */
 char *file_to_string(char *filename);
+
+#endif
