@@ -1,5 +1,5 @@
-# MySSH
-Projet de Réseau et Système pour le semestre 1 du Master Informatique.
+# Projet MySSH
+Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
 
 ## Executables
 ## *mysh*  
@@ -52,8 +52,9 @@ Projet de Réseau et Système pour le semestre 1 du Master Informatique.
     [x] Connexion via le daemon  
     [x] Authentification (shadow password)  
     [x] Protocole d'authentification  
-    [ ] Execution de commande sur le serveur
-    [ ] Redirection du stdout sur la socket (mysh)  
-    [ ] Protocole execution de commande  
-    [ ] One shot command (-c [command])  
+    [x] Execution de commande sur le serveur
+    [x] Redirection du stdout sur la socket (mysh)  
+    [x] Protocole execution de commande  
+    [x] One shot command (-c [command])  
     [ ] Envp en mémoire partagé
+    [ ] Signaux

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 22:40:38
+ * Dernière modification: 25/12/2020 22:13:30
  * Master 1 Informatique
  */
 
@@ -191,14 +191,54 @@ void oneshotexec(Server this, char *command)
     ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
     ch_r.pcode = n;
 
-    this->server_send(this, &ch_r, sizeof(struct channel_data_response));
+    printf("Code de retour : %d\n", ch_r.pcode);
+
+    this->server_send(this, &ch_r, SIZEOF_CH_R);
 }
 
 void exec_loop(Server this)
 {
     struct channel_data ch;
+    struct channel_data_response ch_r;
+    // int save, n;
 
-    this->server_receive(this, &ch, SIZEOF_CH_D);
+    for (;;)
+    {
+        this->server_receive(this, &ch, SIZEOF_CH_D);
+        printf("(%s)\n", ch.command);
+        fflush(stdout);
+        /*if (strncmp(ch.command, "exit", 4) == 0)
+        {
+            printf("(Serveur)\n");
+            ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
+            server_destroy(this);
+            exit(EXIT_SUCCESS);
+        }*/
+
+        // save = dup(fileno(stdout));
+        // dup2(this->socket, fileno(stdout));
+
+        // n = parser(ch.command);
+
+        // printf("%c", '\0');
+
+        // fflush(stdout);
+        // dup2(save, fileno(stdout));
+        // close(save);
+
+        // clearerr(stdout);
+
+        // ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
+        // ch_r.pcode = n;
+        // getcwd(ch_r.comment, 1024);
+
+        // printf("Serveur : (%d) (%d) (%s)\n", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
+        // this->server_send(this, &ch_r, SIZEOF_CH_R);
+
+        oneshotexec(this, ch.command);
+
+        break;
+    }
 }
 
 void getChannel(Server this)
@@ -206,9 +246,7 @@ void getChannel(Server this)
     struct channel_data ch_d;
     int size;
 
-    printf("%sJe vais recevoir dans getchannel\n", GREEN_C);
     this->server_receive(this, &ch_d, SIZEOF_CH_D);
-    printf("%sJ'ai reçu dans getchannel\n", RED_C);
     size = strlen(ch_d.service_name);
 
     fflush(stdout);
@@ -219,30 +257,21 @@ void getChannel(Server this)
     }
     else if (strncmp("shell", ch_d.service_name, size) == 0)
     {
+        struct channel_data_response ch;
+
+        ch.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
+        // memcpy(ch.service_name, ch_d.service_name, size + 1);
+
         if (cd(getenv("HOME")) != 0)
         {
-            printf("Grosse erreur !\n");
+            ch.ssh_answer = SSH_MSG_CHANNEL_FAILURE;
         }
 
-        char buffer[1024];
+        getcwd(ch.comment, 1024);
+        // memcpy(ch.command, buffer, strlen(buffer) + 1);
 
-        printf("%s%s%s\n", YELLOW_C, ch_d.service_name, RESET_C);
-
-        // printf("%s%d%s\n", YELLOW_C, strncmp("shell", ch_d.service_name, size), RESET_C);
-        struct channel_data ch;
-
-        ch.ssh_request = SSH_MSG_CHANNEL_SUCCESS;
-        memcpy(ch.service_name, ch_d.service_name, size + 1);
-        getcwd(buffer, 1024);
-        memcpy(ch.command, buffer, strlen(buffer) + 1);
-        printf("%s\n", ch_d.command);
-        // printprompt();
-
-        printf("%sJe vais envoyer dans getchannel\n", GREEN_C);
         this->server_send(this, &ch, SIZEOF_CH_D);
-        printf("%sJ'ai envoyé dans getchannel\n", RED_C);
-        fflush(stdout);
 
-        // exec_loop(this);
+        exec_loop(this);
     }
 }

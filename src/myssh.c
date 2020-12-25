@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 22:30:58
+ * Dernière modification: 25/12/2020 22:16:46
  * Master 1 Informatique
  */
 
@@ -106,7 +106,7 @@ void authenticate_to_server(Client this, char *username)
 
     this->client_send(this, &p, sizeof(struct auth_data));
 
-    if ((n = this->client_receive(this, &r, sizeof(struct auth_data_response))) == -1)
+    if ((n = this->client_receive(this, &r, SIZEOF_AUTH_R)) == -1)
     {
         perror("recv");
         exit(EXIT_FAILURE);
@@ -118,12 +118,6 @@ void authenticate_to_server(Client this, char *username)
         client_destroy(this);
         exit(EXIT_FAILURE);
     }
-    else
-    {
-        printf("C'est bien ça !\n");
-    }
-
-    fflush(stdout);
 }
 
 char *string_fusion(char **strings)
@@ -165,6 +159,7 @@ void print_socket(Client this)
         if (buffer[n - 1] == '\0')
             break;
     }
+    printf("Done\n");
 }
 
 void oneshotcmd(Client this, char *command)
@@ -178,11 +173,11 @@ void oneshotcmd(Client this, char *command)
     memcpy(ch_d.service_name, "exec\0", 6);
     memcpy(ch_d.command, command, strlen(command) + 1);
 
-    this->client_send(this, &ch_d, sizeof(struct channel_data));
+    this->client_send(this, &ch_d, SIZEOF_CH_D);
 
     print_socket(this);
 
-    this->client_receive(this, &ch_r, sizeof(struct channel_data_response));
+    this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
     print_pcode(ch_r.pcode);
 }
@@ -190,24 +185,46 @@ void oneshotcmd(Client this, char *command)
 void command_loop(Client this)
 {
     struct channel_data ch_d;
+    struct channel_data_response ch_r;
+
+    // char buffer[4098];
 
     ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
     memcpy(ch_d.service_name, "shell", 6);
 
-    printf("%sJe vais envoyer dans command_loop\n", GREEN_C);
     this->client_send(this, &ch_d, SIZEOF_CH_D);
-    printf("%sJ'ai envoyé dans command_loop\n", RED_C);
 
-    printf("%sJe vais recevoir dans command_loop\n", GREEN_C);
-    this->client_receive(this, &ch_d, SIZEOF_CH_D);
-    printf("%sJ'ai reçu dans command_loop\n", RED_C);
+    this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
-    /*if (ch_d.ssh_request == SSH_MSG_CHANNEL_FAILURE)
+    for (;;)
     {
-        printf("%sConnexion refusé\n", RED_C);
-        client_destroy(this);
-        exit(EXIT_FAILURE);
-    }*/
+        printf("%s%s> ", YELLOW_C, ch_r.comment);
 
-    printf("%s%s>\n", YELLOW_C, ch_d.command);
+        // getstdin(ch_d.command, NULL);
+
+        // printf("(%s)\n", ch_d.command);
+        // fflush(stdout);
+
+        oneshotcmd(this, "ls");
+
+        // this->client_send(this, &ch_d, SIZEOF_CH_D);
+
+        /*if (strncmp(ch_d.command, "exit", 4) == 0)
+        {
+            printf("(Client)\n");
+            this->client_receive(this, &ch_r, SIZEOF_CH_R);
+            client_destroy(this);
+            exit(EXIT_SUCCESS);
+        }*/
+
+        // print_socket(this);
+
+        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        // printf("Client : (%d) (%d) (%s)\n", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
+        // print_pcode(ch_r.pcode);
+
+        break;
+    }
 }
