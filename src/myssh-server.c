@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 25/12/2020 22:13:30
+ * Dernière modification: 26/12/2020 13:36:43
  * Master 1 Informatique
  */
 
@@ -80,15 +80,11 @@ void server_destroy(Server this)
 
 void update_user(struct passwd *p)
 {
-
-    // printf("%s -> %s\n", getenv("HOME"), p->pw_dir);
     setenv("HOME", p->pw_dir, 1);
     setenv("USER", p->pw_name, 1);
-    // printf("%s -> %s\n", getenv("USER"), p->pw_name);
-    // printf("%s -> %s\n", getenv("SHELL"), p->pw_shell);
     setenv("SHELL", p->pw_shell, 1);
-    // printf("%s -> %s\n", getenv("LOGNAME"), p->pw_name);
     setenv("LOGNAME", p->pw_name, 1);
+
     setgid(p->pw_gid);
     setuid(p->pw_uid);
     seteuid(p->pw_uid);
@@ -170,23 +166,38 @@ void authenticate_client(struct server *this)
     }
 }
 
-void oneshotexec(Server this, char *command)
+int remote_exec(Server this, char *command)
 {
-    int save, n;
+    int save_out, save_err, n;
     struct channel_data_response ch_r;
 
-    save = dup(fileno(stdout));
+    save_out = dup(fileno(stdout));
+    // save_err = dup(fileno(stderr));
     dup2(this->socket, fileno(stdout));
+    // dup2(this->socket, fileno(stderr));
 
     n = parser(command);
 
     printf("%c", '\0');
 
     fflush(stdout);
-    dup2(save, fileno(stdout));
-    close(save);
+    // fflush(stderr);
+    dup2(save_out, fileno(stdout));
+    // dup2(save_err, fileno(stderr));
+    close(save_out);
+    // close(save_err);
 
     clearerr(stdout);
+    // clearerr(stderr);
+
+    return n;
+}
+
+void oneshotexec(Server this, char *command)
+{
+    struct channel_data_response ch_r;
+
+    int n = remote_exec(this, command);
 
     ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
     ch_r.pcode = n;
@@ -200,44 +211,16 @@ void exec_loop(Server this)
 {
     struct channel_data ch;
     struct channel_data_response ch_r;
-    // int save, n;
 
-    for (;;)
+    ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
+    getcwd(ch_r.comment, 4095);
+
+    this->server_send(this, &ch_r, SIZEOF_CH_R);
+
+    for (int i = 0; i < 2; i++)
     {
         this->server_receive(this, &ch, SIZEOF_CH_D);
-        printf("(%s)\n", ch.command);
-        fflush(stdout);
-        /*if (strncmp(ch.command, "exit", 4) == 0)
-        {
-            printf("(Serveur)\n");
-            ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
-            server_destroy(this);
-            exit(EXIT_SUCCESS);
-        }*/
-
-        // save = dup(fileno(stdout));
-        // dup2(this->socket, fileno(stdout));
-
-        // n = parser(ch.command);
-
-        // printf("%c", '\0');
-
-        // fflush(stdout);
-        // dup2(save, fileno(stdout));
-        // close(save);
-
-        // clearerr(stdout);
-
-        // ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
-        // ch_r.pcode = n;
-        // getcwd(ch_r.comment, 1024);
-
-        // printf("Serveur : (%d) (%d) (%s)\n", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
-        // this->server_send(this, &ch_r, SIZEOF_CH_R);
-
         oneshotexec(this, ch.command);
-
-        break;
     }
 }
 
@@ -248,7 +231,7 @@ void getChannel(Server this)
 
     this->server_receive(this, &ch_d, SIZEOF_CH_D);
     size = strlen(ch_d.service_name);
-
+    printf("(%s)\n", ch_d.command);
     fflush(stdout);
 
     if (strncmp("exec", ch_d.service_name, size) == 0)
@@ -257,21 +240,6 @@ void getChannel(Server this)
     }
     else if (strncmp("shell", ch_d.service_name, size) == 0)
     {
-        struct channel_data_response ch;
-
-        ch.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
-        // memcpy(ch.service_name, ch_d.service_name, size + 1);
-
-        if (cd(getenv("HOME")) != 0)
-        {
-            ch.ssh_answer = SSH_MSG_CHANNEL_FAILURE;
-        }
-
-        getcwd(ch.comment, 1024);
-        // memcpy(ch.command, buffer, strlen(buffer) + 1);
-
-        this->server_send(this, &ch, SIZEOF_CH_D);
-
         exec_loop(this);
     }
 }

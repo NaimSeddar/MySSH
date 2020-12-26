@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 25/12/2020 22:16:46
+ * Dernière modification: 26/12/2020 13:35:25
  * Master 1 Informatique
  */
 
@@ -159,7 +159,6 @@ void print_socket(Client this)
         if (buffer[n - 1] == '\0')
             break;
     }
-    printf("Done\n");
 }
 
 void oneshotcmd(Client this, char *command)
@@ -186,45 +185,28 @@ void command_loop(Client this)
 {
     struct channel_data ch_d;
     struct channel_data_response ch_r;
-
-    // char buffer[4098];
+    char buffer[4095];
 
     ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
-    memcpy(ch_d.service_name, "shell", 6);
+
+    memcpy(ch_d.service_name, "shell\0", 7);
 
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
-    for (;;)
+    for (int i = 0; i < 2; i++)
     {
-        printf("%s%s> ", YELLOW_C, ch_r.comment);
+        printf("%s", ch_r.comment);
+        getstdin(buffer, "> ");
+        memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
-        // getstdin(ch_d.command, NULL);
+        this->client_send(this, &ch_d, SIZEOF_CH_D);
 
-        // printf("(%s)\n", ch_d.command);
-        // fflush(stdout);
+        print_socket(this);
 
-        oneshotcmd(this, "ls");
+        this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
-        // this->client_send(this, &ch_d, SIZEOF_CH_D);
-
-        /*if (strncmp(ch_d.command, "exit", 4) == 0)
-        {
-            printf("(Client)\n");
-            this->client_receive(this, &ch_r, SIZEOF_CH_R);
-            client_destroy(this);
-            exit(EXIT_SUCCESS);
-        }*/
-
-        // print_socket(this);
-
-        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        // this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        // printf("Client : (%d) (%d) (%s)\n", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
-        // print_pcode(ch_r.pcode);
-
-        break;
+        print_pcode(ch_r.pcode);
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 21:58:25
+ * Dernière modification: 26/12/2020 12:27:01
  * Master 1 Informatique
  */
 
@@ -52,6 +52,9 @@ int main(int argc, char *argv[])
     else
     {
         command_loop(clt);
+        // char buffer[1024];
+        // getstdin(buffer, "> ");
+        // oneshotcmd(clt, buffer);
     }
 
     client_destroy(clt);
