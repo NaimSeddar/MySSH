@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 13:35:25
+ * Dernière modification: 26/12/2020 22:15:51
  * Master 1 Informatique
  */
 
@@ -153,11 +153,13 @@ void print_socket(Client this)
 
     buffer[SIZE - 1] = '\0';
 
-    while ((n = this->client_receive(this, &buffer, 2)) != 0)
+    while ((n = this->client_receive(this, &buffer, SIZE)) != 0)
     {
         printf("%s", buffer);
         if (buffer[n - 1] == '\0')
+        {
             break;
+        }
     }
 }
 
@@ -179,6 +181,7 @@ void oneshotcmd(Client this, char *command)
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
     print_pcode(ch_r.pcode);
+    // printf("%d %d %s", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
 }
 
 void command_loop(Client this)
@@ -194,8 +197,9 @@ void command_loop(Client this)
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
+    printf("%s<<%d> <%d> <%s>>%s\n", RED_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 1; i++)
     {
         printf("%s", ch_r.comment);
         getstdin(buffer, "> ");
@@ -203,10 +207,20 @@ void command_loop(Client this)
 
         this->client_send(this, &ch_d, SIZEOF_CH_D);
 
+        /*if (strncmp(ch_d.command, "exit", 4) == 0)
+        {
+            this->client_receive(this, &ch_r, SIZEOF_CH_R);
+            client_destroy(this);
+            exit(EXIT_SUCCESS);
+        }*/
+
         print_socket(this);
 
         this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        printf("%s<ACK>%s\n", YELLOW_C, RESET_C);
 
-        print_pcode(ch_r.pcode);
+        // print_pcode(ch_r.pcode);
+        printf("%s<<%d> <%d> <%s>>%s\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
+        fflush(stdout);
     }
 }

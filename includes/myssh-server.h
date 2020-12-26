@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 17:59:16
+ * Dernière modification: 26/12/2020 22:13:08
  * Master 1 Informatique
  */
 #ifndef _DEFAULT_SOURCE
@@ -23,6 +23,7 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <crypt.h>
+#include <netinet/tcp.h>
 
 struct server
 {

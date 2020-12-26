@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 24/12/2020 13:02:15
+ * Dernière modification: 26/12/2020 22:18:08
  * Master 1 Informatique
  */
 
@@ -21,6 +21,9 @@ int main(int argc, char *argv[])
 
     Server server = server_create_tcp();
     server->socket = s;
+
+    // int yes = 1;
+    // int res = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(int));
 
     authenticate_client(server);
 

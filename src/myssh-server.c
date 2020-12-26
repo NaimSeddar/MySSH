@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 14:03:50
+ * Dernière modification: 26/12/2020 22:13:02
  * Master 1 Informatique
  */
 
@@ -12,23 +12,17 @@
 
 #define neterr_server(srv, n) server_destroy(srv), syserror(n);
 
-/*
-static ssize_t server_receive_tcp(struct server *this, char *buf, size_t size)
-{
-    return recv(this->acceptedSocket, buf, size, 0);
-}
-
-static void server_send_tcp(struct server *this, char *msg)
-{
-    if (send(this->acceptedSocket, msg, strlen(msg), 0) == ERR)
-    {
-        neterr_server(this, SEND_ERR);
-    }
-}*/
-
 ssize_t server_receive_tcp(struct server *this, void *data, size_t size)
 {
-    return recv(this->socket, data, size, 0);
+    ssize_t res = recv(this->socket, data, size, 0);
+
+    if (res == -1)
+    {
+        server_destroy(this);
+        exit(EXIT_FAILURE);
+    }
+
+    return res;
 }
 
 void server_send_tcp(struct server *this, void *data, size_t data_size)
@@ -169,7 +163,6 @@ void authenticate_client(struct server *this)
 int remote_exec(Server this, char *command)
 {
     int save_out, save_err, n;
-    struct channel_data_response ch_r;
 
     save_err = dup(fileno(stderr));
     save_out = dup(fileno(stdout));
@@ -190,9 +183,6 @@ int remote_exec(Server this, char *command)
     close(save_err);
     close(save_out);
 
-    // clearerr(stdout);
-    // clearerr(stderr);
-
     return n;
 }
 
@@ -205,25 +195,51 @@ void oneshotexec(Server this, char *command)
     ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
     ch_r.pcode = n;
 
-    printf("Code de retour : %d\n", ch_r.pcode);
+    printf("Code de retour : %d (%d)\n", ch_r.pcode, ch_r.ssh_answer);
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
+
+    // clearerr(stderr);
+    // clearerr(stdout);
+}
+
+void exit_process(Server this)
+{
+    struct channel_data_response ch_r;
+    ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
+    this->server_send(this, &ch_r, SIZEOF_CH_R);
+    server_destroy(this);
+    exit(EXIT_SUCCESS);
 }
 
 void exec_loop(Server this)
 {
     struct channel_data ch;
     struct channel_data_response ch_r;
+    int n;
 
     ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
     getcwd(ch_r.comment, 4095);
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 1; i++)
     {
         this->server_receive(this, &ch, SIZEOF_CH_D);
-        oneshotexec(this, ch.command);
+
+        if (strncmp(ch.command, "exit", 4) == 0)
+        {
+            exit_process(this);
+        }
+
+        // oneshotexec(this, ch.command);
+        n = remote_exec(this, ch.command);
+        ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
+        ch_r.pcode = n;
+        // getcwd(ch_r.comment, 4095);
+        printf("%sJ'vais envoyer le truc\n", RED_C);
+        this->server_send(this, &ch_r, SIZEOF_CH_R);
+        printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
     }
 }
 
@@ -239,6 +255,7 @@ void getChannel(Server this)
 
     if (strncmp("exec", ch_d.service_name, size) == 0)
     {
+        printf("One shot\n");
         oneshotexec(this, ch_d.command);
     }
     else if (strncmp("shell", ch_d.service_name, size) == 0)

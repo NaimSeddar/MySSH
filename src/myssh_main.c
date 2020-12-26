@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 12:27:01
+ * Dernière modification: 26/12/2020 22:18:04
  * Master 1 Informatique
  */
 
@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
     Client clt = client_create_tcp(addr, 1344);
     int c_arg = 0;
     int i;
+
+    // int yes = 1;
+    // int res = setsockopt(clt->socket, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(int));
 
     if (connect(clt->socket, (const struct sockaddr *)&clt->clientAddr, clt->len) == -1)
     {
@@ -52,9 +55,6 @@ int main(int argc, char *argv[])
     else
     {
         command_loop(clt);
-        // char buffer[1024];
-        // getstdin(buffer, "> ");
-        // oneshotcmd(clt, buffer);
     }
 
     client_destroy(clt);
