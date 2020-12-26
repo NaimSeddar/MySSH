@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 13:36:43
+ * Dernière modification: 26/12/2020 14:03:50
  * Master 1 Informatique
  */
 
@@ -171,23 +171,26 @@ int remote_exec(Server this, char *command)
     int save_out, save_err, n;
     struct channel_data_response ch_r;
 
+    save_err = dup(fileno(stderr));
     save_out = dup(fileno(stdout));
-    // save_err = dup(fileno(stderr));
+
+    dup2(this->socket, fileno(stderr));
     dup2(this->socket, fileno(stdout));
-    // dup2(this->socket, fileno(stderr));
 
     n = parser(command);
 
     printf("%c", '\0');
 
+    fflush(stderr);
     fflush(stdout);
-    // fflush(stderr);
-    dup2(save_out, fileno(stdout));
-    // dup2(save_err, fileno(stderr));
-    close(save_out);
-    // close(save_err);
 
-    clearerr(stdout);
+    dup2(save_err, fileno(stderr));
+    dup2(save_out, fileno(stdout));
+
+    close(save_err);
+    close(save_out);
+
+    // clearerr(stdout);
     // clearerr(stderr);
 
     return n;
