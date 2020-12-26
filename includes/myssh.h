@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 26/12/2020 22:16:51
+ * Dernière modification: 26/12/2020 22:42:46
  * Master 1 Informatique
  */
 
@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <termios.h>
+#include <unistd.h>
 
 #define SIZE 1024
 

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 22:15:51
+ * Dernière modification: 26/12/2020 22:47:58
  * Master 1 Informatique
  */
 
@@ -153,7 +153,9 @@ void print_socket(Client this)
 
     buffer[SIZE - 1] = '\0';
 
-    while ((n = this->client_receive(this, &buffer, SIZE)) != 0)
+    sleep(1);
+
+    while ((n = this->client_receive(this, &buffer, SIZE - 1)) != 0)
     {
         printf("%s", buffer);
         if (buffer[n - 1] == '\0')
@@ -161,6 +163,8 @@ void print_socket(Client this)
             break;
         }
     }
+
+    clearerr(stdout);
 }
 
 void oneshotcmd(Client this, char *command)
@@ -178,7 +182,11 @@ void oneshotcmd(Client this, char *command)
 
     print_socket(this);
 
+    // sleep(1);
+
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
+
+    // sleep(1);
 
     print_pcode(ch_r.pcode);
     // printf("%d %d %s", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
@@ -215,6 +223,8 @@ void command_loop(Client this)
         }*/
 
         print_socket(this);
+
+        sleep(1);
 
         this->client_receive(this, &ch_r, SIZEOF_CH_R);
         printf("%s<ACK>%s\n", YELLOW_C, RESET_C);

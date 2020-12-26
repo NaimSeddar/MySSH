@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 22:13:02
+ * Dernière modification: 26/12/2020 23:27:29
  * Master 1 Informatique
  */
 
@@ -237,6 +237,7 @@ void exec_loop(Server this)
         ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
         ch_r.pcode = n;
         // getcwd(ch_r.comment, 4095);
+        sleep(1);
         printf("%sJ'vais envoyer le truc\n", RED_C);
         this->server_send(this, &ch_r, SIZEOF_CH_R);
         printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
