@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 16:02:19
+ * Dernière modification: 27/12/2020 17:00:03
  * Master 1 Informatique
  */
 
@@ -143,7 +143,7 @@ char *string_fusion(char **strings)
 
 void prompt_client(Client this, char *path)
 {
-    printf("%s%s:%s%s>%s", RED_C, this->host, GREEN_C, path, RESET_C);
+    printf("%s%s:%s%s>%s ", RED_C, this->host, GREEN_C, path, RESET_C);
 }
 
 void print_pcode(int pcode)
@@ -231,6 +231,8 @@ void command_loop(Client this)
         // printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
         // printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
+
+        memset(buffer, '\0', SIZE);
 
         if (strncmp(ch_d.command, "exit", 4) == 0)
         {

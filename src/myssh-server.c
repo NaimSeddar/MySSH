@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 16:03:43
+ * Dernière modification: 27/12/2020 17:00:07
  * Master 1 Informatique
  */
 
@@ -220,7 +220,7 @@ void exec_loop(Server this)
 {
     struct channel_data ch;
     struct channel_data_response ch_r;
-    int n, ack;
+    int n, ack = 1;
 
     ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
     getcwd(ch_r.comment, 4095);
@@ -229,6 +229,7 @@ void exec_loop(Server this)
 
     for (;;)
     {
+        memset(ch.command, '\0', 4096);
         printf("%sJ'attend un commande de la part du client\n", RED_C);
         this->server_receive(this, &ch, SIZEOF_CH_D);
         printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);

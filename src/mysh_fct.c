@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 24/12/2020 22:01:15
+ * Dernière modification: 27/12/2020 16:46:37
  * Master 1 Informatique
  */
 
@@ -24,6 +24,8 @@ int systemV2(char *command)
 {
     int status;
     char **commands = str_split(command, ' ');
+    if (*commands == NULL)
+        return 0;
     search_replace_var(commands);
     int b_in = builtin_parser(commands);
     if (!b_in)
