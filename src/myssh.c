@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 22:47:58
+ * Dernière modification: 27/12/2020 12:42:14
  * Master 1 Informatique
  */
 
@@ -153,9 +153,9 @@ void print_socket(Client this)
 
     buffer[SIZE - 1] = '\0';
 
-    sleep(1);
+    // sleep(1);
 
-    while ((n = this->client_receive(this, &buffer, SIZE - 1)) != 0)
+    while ((n = this->client_receive(this, &buffer, 2)) != 0)
     {
         printf("%s", buffer);
         if (buffer[n - 1] == '\0')
@@ -164,7 +164,8 @@ void print_socket(Client this)
         }
     }
 
-    clearerr(stdout);
+    // clearerr(stdout);
+    // fflush(stdout);
 }
 
 void oneshotcmd(Client this, char *command)
@@ -197,6 +198,7 @@ void command_loop(Client this)
     struct channel_data ch_d;
     struct channel_data_response ch_r;
     char buffer[4095];
+    int ack = 1;
 
     ch_d.ssh_request = SSH_MSG_CHANNEL_REQUEST;
 
@@ -213,7 +215,9 @@ void command_loop(Client this)
         getstdin(buffer, "> ");
         memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
+        printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
+        printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
 
         /*if (strncmp(ch_d.command, "exit", 4) == 0)
         {
@@ -222,15 +226,21 @@ void command_loop(Client this)
             exit(EXIT_SUCCESS);
         }*/
 
+        printf("%sDébut lecture socket\n", RED_C);
         print_socket(this);
+        printf("%sSocket lu :ok_hand:\n", GREEN_C);
 
-        sleep(1);
+        this->client_send(this, &ack, sizeof(int));
 
+        // sleep(1);
+        // fflush(stdout);
+        // printf("%s<ACK>%s\n", YELLOW_C, RESET_C);
+        printf("%sJ'attends le retour du serveur\n", RED_C);
         this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        printf("%s<ACK>%s\n", YELLOW_C, RESET_C);
+        printf("%sLe serveur me dit %d\n", GREEN_C, ch_r.ssh_answer);
 
         // print_pcode(ch_r.pcode);
-        printf("%s<<%d> <%d> <%s>>%s\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
-        fflush(stdout);
+        printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
+        // fflush(stdout);
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 23:27:29
+ * Dernière modification: 27/12/2020 12:42:54
  * Master 1 Informatique
  */
 
@@ -216,32 +216,36 @@ void exec_loop(Server this)
 {
     struct channel_data ch;
     struct channel_data_response ch_r;
-    int n;
+    int n, ack;
 
     ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
     getcwd(ch_r.comment, 4095);
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 
-    for (int i = 0; i < 1; i++)
+    printf("%sJ'attend un commande de la part du client\n", RED_C);
+    this->server_receive(this, &ch, SIZEOF_CH_D);
+    printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
+
+    if (strncmp(ch.command, "exit", 4) == 0)
     {
-        this->server_receive(this, &ch, SIZEOF_CH_D);
-
-        if (strncmp(ch.command, "exit", 4) == 0)
-        {
-            exit_process(this);
-        }
-
-        // oneshotexec(this, ch.command);
-        n = remote_exec(this, ch.command);
-        ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
-        ch_r.pcode = n;
-        // getcwd(ch_r.comment, 4095);
-        sleep(1);
-        printf("%sJ'vais envoyer le truc\n", RED_C);
-        this->server_send(this, &ch_r, SIZEOF_CH_R);
-        printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
+        exit_process(this);
     }
+
+    // oneshotexec(this, ch.command);
+    printf("%sJe lance l'exec\n", RED_C);
+    n = remote_exec(this, ch.command);
+    printf("%sExecution terminé\n", GREEN_C);
+    this->server_receive(this, &ack, sizeof(int));
+
+    ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
+    ch_r.pcode = 0;
+    getcwd(ch_r.comment, 4095);
+    // sleep(1);
+
+    printf("%sJ'vais envoyer le truc\n", RED_C);
+    this->server_send(this, &ch_r, SIZEOF_CH_R);
+    printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
 }
 
 void getChannel(Server this)
