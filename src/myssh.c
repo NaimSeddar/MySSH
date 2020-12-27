@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 12:57:25
+ * Dernière modification: 27/12/2020 14:38:57
  * Master 1 Informatique
  */
 
@@ -141,6 +141,11 @@ char *string_fusion(char **strings)
     return buffer;
 }
 
+void prompt_client(Client this, char *path)
+{
+    printf("%s%s:%s%s>%s", RED_C, this->host, GREEN_C, path, RESET_C);
+}
+
 void print_pcode(int pcode)
 {
     printf("%sprocessus distant terminé avec le code %s[%d]%s\n", GREEN_C, YELLOW_C, pcode, RESET_C);
@@ -209,38 +214,33 @@ void command_loop(Client this)
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
     printf("%s<<%d> <%d> <%s>>%s\n", RED_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 2; i++)
     {
-        printf("%s", ch_r.comment);
-        getstdin(buffer, "> ");
+        // printf("%s", ch_r.comment);
+        prompt_client(this, ch_r.comment);
+        getstdin(buffer, NULL);
         memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
         // printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
         // printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
 
-        /*if (strncmp(ch_d.command, "exit", 4) == 0)
+        if (strncmp(ch_d.command, "exit", 4) == 0)
         {
             this->client_receive(this, &ch_r, SIZEOF_CH_R);
             client_destroy(this);
             exit(EXIT_SUCCESS);
-        }*/
+        }
 
-        printf("%sDébut lecture socket\n%s", RED_C, RESET_C);
+        // printf("%sDébut lecture socket\n%s", RED_C, RESET_C);
         print_socket(this);
-        printf("%sSocket lu :ok_hand:\n", GREEN_C);
+        // printf("%sSocket lu :ok_hand:\n", GREEN_C);
 
         this->client_send(this, &ack, sizeof(int));
 
-        // sleep(1);
-        // fflush(stdout);
-        // printf("%s<ACK>%s\n", YELLOW_C, RESET_C);
-        // printf("%sJ'attends le retour du serveur\n", RED_C);
         this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        // printf("%sLe serveur me dit %d\n", GREEN_C, ch_r.ssh_answer);
 
         // print_pcode(ch_r.pcode);
         printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
-        // fflush(stdout);
     }
 }

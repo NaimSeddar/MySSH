@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 13:56:38
+ * Dernière modification: 27/12/2020 14:23:03
  * Master 1 Informatique
  */
 
@@ -225,7 +225,7 @@ void exec_loop(Server this)
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 2; i++)
     {
         printf("%sJ'attend un commande de la part du client\n", RED_C);
         this->server_receive(this, &ch, SIZEOF_CH_D);
@@ -243,9 +243,8 @@ void exec_loop(Server this)
         this->server_receive(this, &ack, sizeof(int));
 
         ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
-        ch_r.pcode = 0;
+        ch_r.pcode = n;
         getcwd(ch_r.comment, 4095);
-        // sleep(1);
 
         printf("%sJ'vais envoyer le truc\n", RED_C);
         this->server_send(this, &ch_r, SIZEOF_CH_R);

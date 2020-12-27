@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 22:18:04
+ * Dernière modification: 27/12/2020 14:33:55
  * Master 1 Informatique
  */
 
@@ -16,18 +16,18 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *addr = strchr(argv[1], '@');
-    *(addr++) = '\0';
-    char *username = argv[1];
-
-    printf("(%s) at (%s)\n", username, addr);
+    char *addr = strchr(argv[1], '@') + 1;
 
     Client clt = client_create_tcp(addr, 1344);
+    memcpy(clt->host, argv[1], strlen(argv[1]) + 1);
+    printf("(%s)\n", clt->host);
+
+    *(--addr) = '\0';
+    char *username = argv[1];
+    printf("(%s)\n", username);
+
     int c_arg = 0;
     int i;
-
-    // int yes = 1;
-    // int res = setsockopt(clt->socket, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(int));
 
     if (connect(clt->socket, (const struct sockaddr *)&clt->clientAddr, clt->len) == -1)
     {

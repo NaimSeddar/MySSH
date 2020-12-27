@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 26/12/2020 22:42:46
+ * Dernière modification: 27/12/2020 14:31:05
  * Master 1 Informatique
  */
 
@@ -30,6 +30,7 @@ struct client
     int socket;
     struct sockaddr_in clientAddr;
     socklen_t len;
+    char host[SIZE];
 
     ssize_t (*client_receive)(struct client *this, void *data, size_t size);
     void (*client_send)(struct client *this, void *data, size_t size);
