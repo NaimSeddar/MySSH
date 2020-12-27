@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 12:42:14
+ * Dernière modification: 27/12/2020 12:57:25
  * Master 1 Informatique
  */
 
@@ -164,8 +164,8 @@ void print_socket(Client this)
         }
     }
 
-    // clearerr(stdout);
-    // fflush(stdout);
+    clearerr(stdout);
+    fflush(stdout);
 }
 
 void oneshotcmd(Client this, char *command)
@@ -215,9 +215,9 @@ void command_loop(Client this)
         getstdin(buffer, "> ");
         memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
-        printf("%sJ'envoi une commande au serveur\n", RED_C);
+        // printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
-        printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
+        // printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
 
         /*if (strncmp(ch_d.command, "exit", 4) == 0)
         {
@@ -226,7 +226,7 @@ void command_loop(Client this)
             exit(EXIT_SUCCESS);
         }*/
 
-        printf("%sDébut lecture socket\n", RED_C);
+        printf("%sDébut lecture socket\n%s", RED_C, RESET_C);
         print_socket(this);
         printf("%sSocket lu :ok_hand:\n", GREEN_C);
 
@@ -235,9 +235,9 @@ void command_loop(Client this)
         // sleep(1);
         // fflush(stdout);
         // printf("%s<ACK>%s\n", YELLOW_C, RESET_C);
-        printf("%sJ'attends le retour du serveur\n", RED_C);
+        // printf("%sJ'attends le retour du serveur\n", RED_C);
         this->client_receive(this, &ch_r, SIZEOF_CH_R);
-        printf("%sLe serveur me dit %d\n", GREEN_C, ch_r.ssh_answer);
+        // printf("%sLe serveur me dit %d\n", GREEN_C, ch_r.ssh_answer);
 
         // print_pcode(ch_r.pcode);
         printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);

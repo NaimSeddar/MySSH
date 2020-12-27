@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 12:42:54
+ * Dernière modification: 27/12/2020 13:56:38
  * Master 1 Informatique
  */
 
@@ -172,9 +172,11 @@ int remote_exec(Server this, char *command)
 
     n = parser(command);
 
+    fflush(stderr);
+    // fflush(stdout);
+
     printf("%c", '\0');
 
-    fflush(stderr);
     fflush(stdout);
 
     dup2(save_err, fileno(stderr));
@@ -223,29 +225,32 @@ void exec_loop(Server this)
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 
-    printf("%sJ'attend un commande de la part du client\n", RED_C);
-    this->server_receive(this, &ch, SIZEOF_CH_D);
-    printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
-
-    if (strncmp(ch.command, "exit", 4) == 0)
+    for (int i = 0; i < 1; i++)
     {
-        exit_process(this);
+        printf("%sJ'attend un commande de la part du client\n", RED_C);
+        this->server_receive(this, &ch, SIZEOF_CH_D);
+        printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
+
+        if (strncmp(ch.command, "exit", 4) == 0)
+        {
+            exit_process(this);
+        }
+
+        // oneshotexec(this, ch.command);
+        printf("%sJe lance l'exec\n", RED_C);
+        n = remote_exec(this, ch.command);
+        printf("%sExecution terminé\n", GREEN_C);
+        this->server_receive(this, &ack, sizeof(int));
+
+        ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
+        ch_r.pcode = 0;
+        getcwd(ch_r.comment, 4095);
+        // sleep(1);
+
+        printf("%sJ'vais envoyer le truc\n", RED_C);
+        this->server_send(this, &ch_r, SIZEOF_CH_R);
+        printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
     }
-
-    // oneshotexec(this, ch.command);
-    printf("%sJe lance l'exec\n", RED_C);
-    n = remote_exec(this, ch.command);
-    printf("%sExecution terminé\n", GREEN_C);
-    this->server_receive(this, &ack, sizeof(int));
-
-    ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
-    ch_r.pcode = 0;
-    getcwd(ch_r.comment, 4095);
-    // sleep(1);
-
-    printf("%sJ'vais envoyer le truc\n", RED_C);
-    this->server_send(this, &ch_r, SIZEOF_CH_R);
-    printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
 }
 
 void getChannel(Server this)
