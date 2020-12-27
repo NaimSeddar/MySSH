@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 14:23:03
+ * Dernière modification: 27/12/2020 16:03:43
  * Master 1 Informatique
  */
 
@@ -172,12 +172,14 @@ int remote_exec(Server this, char *command)
 
     n = parser(command);
 
-    fflush(stderr);
-    // fflush(stdout);
-
     printf("%c", '\0');
 
+    fflush(stderr);
     fflush(stdout);
+    clearerr(stdout);
+    clearerr(stderr);
+
+    // fflush(stdout);
 
     dup2(save_err, fileno(stderr));
     dup2(save_out, fileno(stdout));
@@ -225,11 +227,14 @@ void exec_loop(Server this)
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 
-    for (int i = 0; i < 2; i++)
+    for (;;)
     {
         printf("%sJ'attend un commande de la part du client\n", RED_C);
         this->server_receive(this, &ch, SIZEOF_CH_D);
         printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
+
+        if (ch.command[0] == '\0')
+            continue;
 
         if (strncmp(ch.command, "exit", 4) == 0)
         {

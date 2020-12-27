@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 14:38:57
+ * Dernière modification: 27/12/2020 16:02:19
  * Master 1 Informatique
  */
 
@@ -154,7 +154,7 @@ void print_pcode(int pcode)
 void print_socket(Client this)
 {
     char buffer[SIZE];
-    int n;
+    int n, cpt = 0;
 
     buffer[SIZE - 1] = '\0';
 
@@ -214,12 +214,19 @@ void command_loop(Client this)
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
     printf("%s<<%d> <%d> <%s>>%s\n", RED_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
 
-    for (int i = 0; i < 2; i++)
+    for (;;)
     {
         // printf("%s", ch_r.comment);
         prompt_client(this, ch_r.comment);
         getstdin(buffer, NULL);
-        memcpy(ch_d.command, buffer, strlen(buffer) + 1);
+        if (strlen(buffer) == 0)
+        {
+            buffer[0] = '\0';
+            this->client_send(this, &ch_d, SIZEOF_CH_D);
+            continue;
+        }
+        else
+            memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
         // printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
@@ -235,6 +242,8 @@ void command_loop(Client this)
         // printf("%sDébut lecture socket\n%s", RED_C, RESET_C);
         print_socket(this);
         // printf("%sSocket lu :ok_hand:\n", GREEN_C);
+
+        // sleep(1);
 
         this->client_send(this, &ack, sizeof(int));
 
