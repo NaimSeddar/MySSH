@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 17:00:07
+ * Dernière modification: 27/12/2020 18:14:21
  * Master 1 Informatique
  */
 
@@ -158,6 +158,8 @@ void authenticate_client(struct server *this)
         server_destroy(this);
         exit(EXIT_FAILURE);
     }
+
+    // sleep(1);
 }
 
 int remote_exec(Server this, char *command)
@@ -178,8 +180,6 @@ int remote_exec(Server this, char *command)
     fflush(stdout);
     clearerr(stdout);
     clearerr(stderr);
-
-    // fflush(stdout);
 
     dup2(save_err, fileno(stderr));
     dup2(save_out, fileno(stdout));
@@ -220,7 +220,7 @@ void exec_loop(Server this)
 {
     struct channel_data ch;
     struct channel_data_response ch_r;
-    int n, ack = 1;
+    int n, ack = 0;
 
     ch_r.ssh_answer = SSH_MSG_CHANNEL_SUCCESS;
     getcwd(ch_r.comment, 4095);
@@ -242,11 +242,16 @@ void exec_loop(Server this)
             exit_process(this);
         }
 
-        // oneshotexec(this, ch.command);
         printf("%sJe lance l'exec\n", RED_C);
         n = remote_exec(this, ch.command);
         printf("%sExecution terminé\n", GREEN_C);
-        this->server_receive(this, &ack, sizeof(int));
+
+        do
+        {
+            this->server_receive(this, &ack, sizeof(int));
+        } while (ack != 1);
+
+        ack = 0;
 
         ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
         ch_r.pcode = n;

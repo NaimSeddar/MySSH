@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 17:00:03
+ * Dernière modification: 27/12/2020 18:37:29
  * Master 1 Informatique
  */
 
@@ -154,7 +154,7 @@ void print_pcode(int pcode)
 void print_socket(Client this)
 {
     char buffer[SIZE];
-    int n, cpt = 0;
+    int n;
 
     buffer[SIZE - 1] = '\0';
 
@@ -186,9 +186,8 @@ void oneshotcmd(Client this, char *command)
 
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
+    sleep(1);
     print_socket(this);
-
-    // sleep(1);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
@@ -216,6 +215,7 @@ void command_loop(Client this)
 
     for (;;)
     {
+        sleep(1);
         // printf("%s", ch_r.comment);
         prompt_client(this, ch_r.comment);
         getstdin(buffer, NULL);
@@ -249,9 +249,13 @@ void command_loop(Client this)
 
         this->client_send(this, &ack, sizeof(int));
 
-        this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        do
+        {
+            this->client_receive(this, &ch_r, SIZEOF_CH_R);
+        } while (ch_r.ssh_answer != SSH_MSG_CHANNEL_SUCCESS && ch_r.ssh_answer != SSH_MSG_CHANNEL_FAILURE);
 
         // print_pcode(ch_r.pcode);
         printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
+        ch_r.ssh_answer = 0;
     }
 }
