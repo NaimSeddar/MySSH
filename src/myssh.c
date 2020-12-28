@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 18:37:29
+ * Dernière modification: 28/12/2020 16:40:01
  * Master 1 Informatique
  */
 
@@ -158,7 +158,7 @@ void print_socket(Client this)
 
     buffer[SIZE - 1] = '\0';
 
-    // sleep(1);
+    sleep(1);
 
     while ((n = this->client_receive(this, &buffer, 2)) != 0)
     {
@@ -186,7 +186,7 @@ void oneshotcmd(Client this, char *command)
 
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
-    sleep(1);
+    // sleep(1);
     print_socket(this);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
@@ -215,7 +215,7 @@ void command_loop(Client this)
 
     for (;;)
     {
-        sleep(1);
+        // sleep(1);
         // printf("%s", ch_r.comment);
         prompt_client(this, ch_r.comment);
         getstdin(buffer, NULL);

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 11:20:34
- * Dernière modification: 20/12/2020 12:26:34
+ * Dernière modification: 28/12/2020 21:25:24
  * Master 1 Informatique
  */
 
@@ -44,6 +44,7 @@ void getcmd(char *pid, proc *p)
 {
     char filename[1024];
     char cmd[1024];
+    memset(cmd, '\0', 1024);
     char c;
     int i = 0;
 
@@ -57,9 +58,18 @@ void getcmd(char *pid, proc *p)
         cmd[i] = (c == '\0' ? ' ' : c);
         i++;
     }
+    cmd[i++] = '\0';
 
-    p->command = (char *)malloc(sizeof(char) * i);
-    strncpy(p->command, cmd, i - 1);
+    if (cmd[0] != '\0')
+    {
+        p->command = (char *)malloc(sizeof(char) * i);
+        strncpy(p->command, cmd, i);
+    }
+    else
+    {
+        p->command = (char *)malloc(sizeof(char) * 4);
+        strncpy(p->command, "???\0", 4);
+    }
 
     close(f);
 }
@@ -248,6 +258,7 @@ int myps()
 
         strcat(ppath, p->pid);
         lstat(ppath, &dirInfo);
+
         pswd = getpwuid(dirInfo.st_uid);
 
         p->user = pswd->pw_name;
@@ -266,6 +277,7 @@ int myps()
 
         free(dir[i]);
         free(p);
+        free(p->command);
     }
     free(dir);
     return 0;

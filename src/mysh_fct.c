@@ -1,10 +1,11 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 27/12/2020 16:46:37
+ * Dernière modification: 28/12/2020 21:00:26
  * Master 1 Informatique
  */
 
+#define _DEFAULT_SOURCE
 #include "../includes/mysh.h"
 
 /*void ctrlz(int sig)
@@ -15,6 +16,21 @@
 
 pid_t cmd_pid = -1;
 
+int run_in_bg(char **fields)
+{
+    for (int i = 0; *(fields + i); i++)
+    {
+        if (strlen(*(fields + i)) == 1 && *(fields + i)[0] == '&')
+        {
+            *(fields + i) = NULL;
+            // printf("go en bg\n");
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 /**
  * A better system() saw in class.
  * A lighter version based on execvp. 
@@ -24,14 +40,21 @@ int systemV2(char *command)
 {
     int status;
     char **commands = str_split(command, ' ');
+
     if (*commands == NULL)
         return 0;
+
     search_replace_var(commands);
+
+    // int bg = run_in_bg(commands);
+
     int b_in = builtin_parser(commands);
     if (!b_in)
         return b_in;
+
     pid_t pid = fork();
     cmd_pid = pid;
+
     if (pid == ERR)
     {
         perror("Fork");
@@ -40,8 +63,14 @@ int systemV2(char *command)
 
     if (!pid)
     {
+        // if (bg)
+        // {
+        //     setpgid(0, 0);
+        // }
+
         if (commands[1] == NULL)
         {
+
             if (execvp(*commands, commands) == -1)
             {
                 fprintf(stderr, "%s: Unknown command\n", *commands);
@@ -96,15 +125,13 @@ int systemV2(char *command)
         exit(FAILED_EXEC);
     }
 
+    // if (!bg)
+    // {
     if (wait(&status) == ERR)
     {
         perror("wait");
         return ERR;
     }
-    // if (waitpid(pid, &status, WNOHANG) == ERR)
-    // {
-    //     perror("wait");
-    //     return ERR;
     // }
 
     if (WIFEXITED(status))
@@ -179,7 +206,7 @@ int parser(char *command)
         }
         else
         {
-            // printf("Lance exec sur: (%s)\n", *(commands + i));
+            printf("Lance exec sur: (%s)\n", *(commands + i));
             res = systemV2(*(commands + i));
         }
         // printf("blabla bas\n");
