@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 28/12/2020 21:57:53
+ * Dernière modification: 28/12/2020 22:19:41
  * Master 1 Informatique
  */
 
@@ -13,25 +13,35 @@
  */
 void ctrlc(int sig)
 {
-    printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
+    // printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
 
     if (cmd_pid == -1)
     {
-        printf("kill main\n");
-        char resp;
+        char resp = '\0';
+
         printf("Do you really want to quit ? [Y/n] \n");
-        resp = getchar();
-        // kill(getpid(), SIGKILL);
+
+        do
+        {
+            resp = getchar();
+        } while (resp == '\n' || resp == '\0');
+
         if (resp == 'y' || resp == 'Y')
+        {
+            printf("kill main\n");
             exit(0);
+        }
         else
-            mysh();
+        {
+            printprompt(pcode);
+            return;
+        }
     }
     else
     {
         kill(cmd_pid, SIGKILL);
+        cmd_pid = -1;
     }
-    cmd_pid = -1;
 }
 
 /*void ctrlz(int sig)
@@ -41,6 +51,7 @@ void ctrlc(int sig)
 }*/
 
 pid_t cmd_pid = -1;
+int pcode = 0;
 
 int run_in_bg(char **fields)
 {
@@ -334,7 +345,7 @@ void search_replace_var(char **commands)
     }
 }
 
-void printprompt()
+void printprompt(int pcode)
 {
     char currpath[1024];
     char *username;
@@ -356,7 +367,7 @@ void printprompt()
 
     if (username != NULL)
     {
-        printf(U_RED_C "%s:" RESET_C, username);
+        printf(YELLOW_C "[%d]" U_RED_C "%s:" RESET_C, pcode, username);
     }
 
     printf(GREEN_C "%s" RESET_C, currpath);
@@ -368,14 +379,13 @@ void mysh()
     signal(SIGINT, ctrlc);
 
     char *buffer;
-    int pcode = 0;
 
     for (;;)
     {
         cmd_pid = -1;
 
-        printf(YELLOW_C "[%d]" RESET_C, pcode);
-        printprompt();
+        // printf(YELLOW_C "[%d]" RESET_C, pcode);
+        printprompt(pcode);
 
         buffer = malloc(BUFFER_SIZE * sizeof(char));
         memset(buffer, '\0', BUFFER_SIZE);

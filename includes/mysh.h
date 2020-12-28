@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 10:19:34
- * Dernière modification: 24/12/2020 13:32:40
+ * Dernière modification: 28/12/2020 22:06:24
  * Master 1 Informatique
  */
 
@@ -24,6 +24,7 @@
 #define FAILED_EXEC 127
 
 extern pid_t cmd_pid;
+extern int pcode;
 
 /**
  * A better system(), saw in class.
@@ -42,6 +43,6 @@ int pipeline(char *command);
 
 void search_replace_var(char **commands);
 
-void printprompt();
+void printprompt(int pcode);
 
 void mysh();
