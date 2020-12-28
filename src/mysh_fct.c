@@ -1,12 +1,38 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 28/12/2020 21:00:26
+ * Dernière modification: 28/12/2020 21:57:53
  * Master 1 Informatique
  */
 
 #define _DEFAULT_SOURCE
 #include "../includes/mysh.h"
+
+/* TODO
+ *  Demander confirmation, et tuer tout les enfants en fond.
+ */
+void ctrlc(int sig)
+{
+    printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
+
+    if (cmd_pid == -1)
+    {
+        printf("kill main\n");
+        char resp;
+        printf("Do you really want to quit ? [Y/n] \n");
+        resp = getchar();
+        // kill(getpid(), SIGKILL);
+        if (resp == 'y' || resp == 'Y')
+            exit(0);
+        else
+            mysh();
+    }
+    else
+    {
+        kill(cmd_pid, SIGKILL);
+    }
+    cmd_pid = -1;
+}
 
 /*void ctrlz(int sig)
 {
@@ -46,7 +72,7 @@ int systemV2(char *command)
 
     search_replace_var(commands);
 
-    // int bg = run_in_bg(commands);
+    int bg = run_in_bg(commands);
 
     int b_in = builtin_parser(commands);
     if (!b_in)
@@ -63,10 +89,10 @@ int systemV2(char *command)
 
     if (!pid)
     {
-        // if (bg)
-        // {
-        //     setpgid(0, 0);
-        // }
+        if (bg)
+        {
+            setpgid(0, 0);
+        }
 
         if (commands[1] == NULL)
         {
@@ -125,14 +151,14 @@ int systemV2(char *command)
         exit(FAILED_EXEC);
     }
 
-    // if (!bg)
-    // {
-    if (wait(&status) == ERR)
+    if (!bg)
     {
-        perror("wait");
-        return ERR;
+        if (waitpid(-1, &status, WUNTRACED) == ERR)
+        {
+            perror("wait");
+            return ERR;
+        }
     }
-    // }
 
     if (WIFEXITED(status))
     {
@@ -209,8 +235,6 @@ int parser(char *command)
             printf("Lance exec sur: (%s)\n", *(commands + i));
             res = systemV2(*(commands + i));
         }
-        // printf("blabla bas\n");
-        // free(commands + i);
     }
     free(commands);
     return res;
@@ -341,16 +365,17 @@ void printprompt()
 
 void mysh()
 {
-
-    // signal(SIGTSTP, ctrlz);
+    signal(SIGINT, ctrlc);
 
     char *buffer;
+    int pcode = 0;
 
     for (;;)
     {
         cmd_pid = -1;
+
+        printf(YELLOW_C "[%d]" RESET_C, pcode);
         printprompt();
-        // printf("%s$ ", currpath);
 
         buffer = malloc(BUFFER_SIZE * sizeof(char));
         memset(buffer, '\0', BUFFER_SIZE);
@@ -361,16 +386,7 @@ void mysh()
         // replace '\n' by '\0'
         buffer[strlen(buffer) - 1] = '\0';
 
-        /*if (strncmp(buffer, "exit", 4) == 0)
-        {
-            // printf("strcmp: %d\n", strcmp(buffer, "exit"));
-            free(buffer);
-            break;
-        }*/
-
-        printf(YELLOW_C "[%d]" RESET_C, parser(buffer));
-
-        // free(commands);
+        pcode = parser(buffer);
 
         free(buffer);
     }
