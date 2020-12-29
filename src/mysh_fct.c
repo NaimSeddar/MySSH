@@ -1,16 +1,13 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 28/12/2020 22:19:41
+ * Dernière modification: 29/12/2020 10:49:07
  * Master 1 Informatique
  */
 
 #define _DEFAULT_SOURCE
 #include "../includes/mysh.h"
 
-/* TODO
- *  Demander confirmation, et tuer tout les enfants en fond.
- */
 void ctrlc(int sig)
 {
     // printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);

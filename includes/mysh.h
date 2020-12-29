@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 10:19:34
- * Dernière modification: 28/12/2020 22:06:24
+ * Dernière modification: 29/12/2020 10:59:34
  * Master 1 Informatique
  */
 
@@ -23,8 +23,20 @@
 #define ERR -1
 #define FAILED_EXEC 127
 
+struct myjob
+{
+    int job_id;
+    int pid;
+    char command[256];
+    char etat[32];
+};
+
+typedef struct myjob *Myjobs;
+
 extern pid_t cmd_pid;
 extern int pcode;
+extern Myjobs jobs[256];
+extern int nb_jobs;
 
 /**
  * A better system(), saw in class.
