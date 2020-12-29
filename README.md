@@ -6,7 +6,7 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
 ### Fonctionnalités :
     [x] Petit prompt sympa
     [x] Changer de répertoire (cd)  
-    [x] Les signaux  
+    [x] Les signaux (CTRL+C et CTRL+Z)  
     [x] Enchainement de commande via les ";"  
     [x] Application des && et ||  
     [x] Wildcards  
@@ -15,10 +15,11 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
     [x] Prendre en charge des variables   
     [x] Utliser myls  
     [x] Utliser myps  
-    [ ] Commande "status" 
-    [ ] Lancer un prog en background  
-    [ ] Commande interne myjobs  
-    [ ] Passer une commande de foreground à background (et inversement)  
+    [x] Commande "status" 
+    [x] Lancer un prog en background  
+    [x] Commande interne myjobs  
+    [ ] Commande mybg (fg/stopped ==> bg)  
+    [ ] Commande myfg (bg         ==> fg)  
 
 
 ## *myls (ls -l)*
@@ -56,5 +57,6 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
     [x] Redirection du stdout sur la socket (mysh)  
     [x] Protocole execution de commande  
     [x] One shot command (-c [command])  
+    [ ] Fichier config dans le dossier $HOME/.myssh
     [ ] Envp en mémoire partagé
     [ ] Signaux
