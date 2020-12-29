@@ -18,8 +18,8 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
     [x] Commande "status" 
     [x] Lancer un prog en background  
     [x] Commande interne myjobs  
-    [ ] Commande mybg (fg/stopped ==> bg)  
-    [ ] Commande myfg (bg         ==> fg)  
+    [x] Commande mybg (fg/stopped ==> bg)  
+    [x] Commande myfg (bg         ==> fg)  
 
 
 ## *myls (ls -l)*
@@ -57,6 +57,6 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
     [x] Redirection du stdout sur la socket (mysh)  
     [x] Protocole execution de commande  
     [x] One shot command (-c [command])  
-    [ ] Fichier config dans le dossier $HOME/.myssh
+    [x] Fichier config dans le dossier $HOME/.myssh
     [ ] Envp en mémoire partagé
     [ ] Signaux
