@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 29/12/2020 13:30:23
+ * Dernière modification: 29/12/2020 19:11:10
  * Master 1 Informatique
  */
 
@@ -50,8 +50,8 @@ void ctrlz(int sig)
         jobs[nb_jobs].job_id = nb_jobs;
         jobs[nb_jobs].pid = cmd_pid;
         jobs[nb_jobs].etat = "Stoppé";
-        memcpy(jobs[nb_jobs].command, prev_cmd, strlen(prev_cmd) + 1);
-        printf("[%d] %s\n", jobs[nb_jobs].job_id, jobs[nb_jobs].command);
+        memcpy(jobs[nb_jobs].command, prev_cmd, strlen(prev_cmd));
+        printf("\n[%d] %s\n", jobs[nb_jobs].job_id, jobs[nb_jobs].command);
         nb_jobs++;
         killpg(cmd_pid, SIGSTOP);
     }
@@ -121,11 +121,14 @@ int systemV2(char *command)
 
     int bg = run_it_in_bg(commands);
 
-    printf("bg : %s\n", (bg == 1 ? "oui" : "non"));
-
     int b_in = builtin_parser(commands);
-    if (!b_in)
+    if (b_in != -2)
+    {
+        prev_fg_proc = getpid();
+        prev_pcode = b_in;
+
         return b_in;
+    }
 
     pid_t pid = fork();
     cmd_pid = pid;
@@ -202,8 +205,8 @@ int systemV2(char *command)
 
     if (!bg)
     {
-        prev_fg_proc = cmd_pid;
 
+        prev_fg_proc = cmd_pid;
         if (waitpid(-1, &status, WUNTRACED) == ERR)
         {
             perror("wait");
