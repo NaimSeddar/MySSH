@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 10:19:34
- * Dernière modification: 29/12/2020 10:59:34
+ * Dernière modification: 29/12/2020 13:21:44
  * Master 1 Informatique
  */
 
@@ -25,25 +25,36 @@
 
 struct myjob
 {
+    int show;
     int job_id;
     int pid;
     char command[256];
-    char etat[32];
+    const char *etat;
 };
 
-typedef struct myjob *Myjobs;
+/*
+    char *msg[] = {"En cours", "Stoppé"};
+    Et switch si SIGSTP envoyé :shruuging:
+*/
+
+// typedef struct myjob *Myjobs;
 
 extern pid_t cmd_pid;
 extern int pcode;
-extern Myjobs jobs[256];
+extern struct myjob jobs[256];
 extern int nb_jobs;
+extern char prev_cmd[4096];
+extern pid_t prev_fg_proc;
+extern int prev_pcode;
 
 /**
  * A better system(), saw in class.
  * A lighter version base on execvp. 
  * @param command
- * */
+ **/
 int systemV2(char *command);
+
+int run_it_in_bg(char **fields);
 
 int parser(char *command);
 

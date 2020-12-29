@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              21/11/2020 12:13:21
- * Dernière modification: 20/12/2020 12:24:45
+ * Dernière modification: 29/12/2020 13:27:39
  * Master 1 Informatique
  */
 
@@ -9,6 +9,49 @@
 #include "../includes/utils.h"
 #include "../includes/myls.h"
 #include "../includes/myps.h"
+#include "../includes/mysh.h"
+
+int status()
+{
+    if (prev_fg_proc == -1)
+    {
+        printf("Aucune commande n'a encore été exécuté en premier plan\n");
+        return 0;
+    }
+    else
+    {
+        printf("%d terminé ", prev_fg_proc);
+    }
+
+    if (prev_pcode != -1)
+    {
+        printf("avec comme code de retour %d\n", prev_pcode);
+    }
+    else
+    {
+        printf("anormalement\n");
+    }
+
+    return 0;
+}
+
+int myjobs()
+{
+    if (nb_jobs == 0)
+        return 0;
+    for (int i = 0; i < nb_jobs; i++)
+    {
+        if (jobs[i].show)
+            printf("[%d] %d %s %s\n", jobs[i].job_id, jobs[i].pid, jobs[i].etat, jobs[i].command);
+    }
+    return 0;
+}
+
+int clear_prompt()
+{
+    printf("\33[H\33[J");
+    return 0;
+}
 
 int cd(char *path)
 {
@@ -16,11 +59,12 @@ int cd(char *path)
     {
         path = getenv("HOME");
     }
+
     if (chdir(path) == ERR)
     {
         perror("cd");
     }
-    // free(path);
+
     return 0;
 }
 
@@ -69,6 +113,18 @@ int builtin_parser(char **command_line)
     else if (strncmp(command_line[0], "unset", 5) == 0)
     {
         return unset_var(command_line[1]);
+    }
+    else if (strncmp(command_line[0], "clear", 5) == 0)
+    {
+        return clear_prompt();
+    }
+    else if (strncmp(command_line[0], "myjobs", 6) == 0)
+    {
+        return myjobs();
+    }
+    else if (strncmp(command_line[0], "status", 6) == 0)
+    {
+        return status();
     }
 
     return 1;

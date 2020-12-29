@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 29/12/2020 10:49:07
+ * Dernière modification: 29/12/2020 13:30:23
  * Master 1 Informatique
  */
 
@@ -16,7 +16,7 @@ void ctrlc(int sig)
     {
         char resp = '\0';
 
-        printf("Do you really want to quit ? [Y/n] \n");
+        printf("\nDo you really want to quit ? [Y/n] \n");
 
         do
         {
@@ -25,7 +25,8 @@ void ctrlc(int sig)
 
         if (resp == 'y' || resp == 'Y')
         {
-            printf("kill main\n");
+            printf("Farewell...\n");
+            kill(0, SIGKILL);
             exit(0);
         }
         else
@@ -41,23 +42,61 @@ void ctrlc(int sig)
     }
 }
 
-/*void ctrlz(int sig)
+void ctrlz(int sig)
 {
-    printf("pid to stop : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
-    kill((cmd_pid == -1 ? getpid() : cmd_pid), SIGSTOP);
-}*/
+    if (cmd_pid != -1)
+    {
+        jobs[nb_jobs].show = 1;
+        jobs[nb_jobs].job_id = nb_jobs;
+        jobs[nb_jobs].pid = cmd_pid;
+        jobs[nb_jobs].etat = "Stoppé";
+        memcpy(jobs[nb_jobs].command, prev_cmd, strlen(prev_cmd) + 1);
+        printf("[%d] %s\n", jobs[nb_jobs].job_id, jobs[nb_jobs].command);
+        nb_jobs++;
+        killpg(cmd_pid, SIGSTOP);
+    }
+    else
+    {
+        printprompt(pcode);
+        return;
+    }
+}
 
 pid_t cmd_pid = -1;
 int pcode = 0;
+struct myjob jobs[256];
+int nb_jobs = 0;
+char prev_cmd[4096];
+pid_t prev_fg_proc = -1;
+int prev_pcode = -1;
 
-int run_in_bg(char **fields)
+void check_jobs()
+{
+    int status;
+    pid_t p;
+
+    if (nb_jobs == 0)
+        return;
+
+    for (int i = 0; i < nb_jobs; i++)
+    {
+        if (jobs[i].show)
+        {
+            p = waitpid(jobs[i].pid, &status, WNOHANG);
+            // printf("status: %d (%d)\n", status, p);
+            if (p == -1)
+                jobs[i].show = 0;
+        }
+    }
+}
+
+int run_it_in_bg(char **fields)
 {
     for (int i = 0; *(fields + i); i++)
     {
         if (strlen(*(fields + i)) == 1 && *(fields + i)[0] == '&')
         {
             *(fields + i) = NULL;
-            // printf("go en bg\n");
             return 1;
         }
     }
@@ -80,7 +119,9 @@ int systemV2(char *command)
 
     search_replace_var(commands);
 
-    int bg = run_in_bg(commands);
+    int bg = run_it_in_bg(commands);
+
+    printf("bg : %s\n", (bg == 1 ? "oui" : "non"));
 
     int b_in = builtin_parser(commands);
     if (!b_in)
@@ -161,17 +202,32 @@ int systemV2(char *command)
 
     if (!bg)
     {
+        prev_fg_proc = cmd_pid;
+
         if (waitpid(-1, &status, WUNTRACED) == ERR)
         {
             perror("wait");
             return ERR;
         }
     }
+    else
+    {
+        jobs[nb_jobs].show = 1;
+        jobs[nb_jobs].job_id = nb_jobs;
+        jobs[nb_jobs].pid = cmd_pid;
+        jobs[nb_jobs].etat = "En cours d'exécution";
+        memcpy(jobs[nb_jobs].command, command, strlen(command) + 1);
+        printf("[%d] %d %s %s", jobs[nb_jobs].job_id, jobs[nb_jobs].pid, jobs[nb_jobs].etat, jobs[nb_jobs].command);
+        nb_jobs++;
+    }
 
     if (WIFEXITED(status))
     {
-        return WEXITSTATUS(status);
+        prev_pcode = WEXITSTATUS(status);
+        return prev_pcode;
     }
+
+    prev_pcode = ERR;
 
     return ERR;
 }
@@ -374,14 +430,15 @@ void printprompt(int pcode)
 void mysh()
 {
     signal(SIGINT, ctrlc);
+    signal(SIGTSTP, ctrlz);
 
     char *buffer;
 
     for (;;)
     {
+        check_jobs();
         cmd_pid = -1;
 
-        // printf(YELLOW_C "[%d]" RESET_C, pcode);
         printprompt(pcode);
 
         buffer = malloc(BUFFER_SIZE * sizeof(char));
@@ -392,6 +449,8 @@ void mysh()
 
         // replace '\n' by '\0'
         buffer[strlen(buffer) - 1] = '\0';
+
+        memcpy(prev_cmd, buffer, strlen(buffer));
 
         pcode = parser(buffer);
 
