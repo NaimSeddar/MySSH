@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 27/12/2020 14:31:05
+ * Dernière modification: 29/12/2020 20:53:33
  * Master 1 Informatique
  */
 
@@ -40,6 +40,7 @@ typedef struct client *Client;
 
 Client client_create_tcp(char *addr, int port);
 void client_destroy(Client this);
+int getHost(char *hostname, char *addr, char *name, char *fullhost);
 void getstdin(char *buffer, const char *prompt);
 void getpassword(char *buffer);
 void authenticate_to_server(Client this, char *username);

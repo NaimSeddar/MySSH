@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 18:14:21
+ * Dernière modification: 29/12/2020 20:42:53
  * Master 1 Informatique
  */
 
@@ -230,8 +230,12 @@ void exec_loop(Server this)
     for (;;)
     {
         memset(ch.command, '\0', 4096);
+        ch.ssh_request = 0;
         printf("%sJ'attend un commande de la part du client\n", RED_C);
-        this->server_receive(this, &ch, SIZEOF_CH_D);
+        do
+        {
+            this->server_receive(this, &ch, SIZEOF_CH_D);
+        } while (ch.ssh_request == 0);
         printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
 
         if (ch.command[0] == '\0')

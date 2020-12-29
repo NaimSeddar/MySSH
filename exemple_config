@@ -1,0 +1,12 @@
+Host moi
+    Hostname 127.0.0.1
+    User naim
+
+Host encoremoi
+    Hostname 127.0.0.1
+    User seddar
+
+Host su
+    Hostname 127.0.0.1
+    User root
+    

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 28/12/2020 16:40:01
+ * Dernière modification: 29/12/2020 20:56:53
  * Master 1 Informatique
  */
 
@@ -54,6 +54,64 @@ void client_destroy(Client this)
 {
     close(this->socket);
     free(this);
+}
+
+int getHost(char *hostname, char *addr, char *name, char *fullhost)
+{
+    const char *config = "/.myssh/config";
+    char buffer[1024];
+    char host[1024];
+    char *tmp;
+    int in_config = 0;
+    int len;
+
+    memcpy(buffer, getenv("HOME"), strlen(getenv("HOME")) + 1);
+    strcat(buffer, config);
+
+    memcpy(host, "Host ", 6);
+    strcat(host, hostname);
+
+    FILE *f = fopen(buffer, "r");
+    if (f == NULL)
+    {
+        printf("Pas de fichier config :shrugging:\n");
+        return 0;
+    }
+
+    while (fgets(buffer, 1024, f))
+    {
+        if ((tmp = strstr(buffer, host)))
+        {
+            sscanf(buffer, "Host %s", name);
+            if (strncmp(name, hostname, strlen(name)) != 0)
+            {
+                continue;
+            }
+
+            in_config++;
+
+            if (fgets(buffer, 1024, f))
+            {
+                sscanf(buffer, "\tHostname %s ", addr);
+            }
+
+            if (fgets(buffer, 1024, f))
+            {
+                sscanf(buffer, "\tUser %s ", name);
+            }
+
+            break;
+        }
+    }
+
+    len = strlen(name);
+    memcpy(fullhost, name, len);
+    fullhost[len] = '@';
+    strcat(fullhost, addr);
+
+    fclose(f);
+
+    return in_config;
 }
 
 void getstdin(char *buffer, const char *prompt)

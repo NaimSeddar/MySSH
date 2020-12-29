@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 27/12/2020 14:33:55
+ * Dernière modification: 29/12/2020 20:58:08
  * Master 1 Informatique
  */
 
@@ -16,15 +16,37 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *addr = strchr(argv[1], '@') + 1;
+    char addr[1024];
+    char username[1024];
+    char host[1024];
+    char *buffer;
+    int tmp;
 
+    if (!(tmp = getHost(argv[1], addr, username, host)))
+    {
+        if (!strchr(argv[1], '@'))
+        {
+            printf("Usage: ./myssh <username>@<dotted address>\n");
+            exit(EXIT_FAILURE);
+        }
+        buffer = strchr(argv[1], '@') + 1;
+
+        memcpy(addr, buffer, strlen(buffer));
+
+        *(--buffer) = '\0';
+        memcpy(username, argv[1], strlen(argv[1]) + 1);
+    }
+
+    // printf("addr (%s)\n", addr);
+    // printf("username (%s)\n", username);
+    // printf("host (%s)\n", host);
+    // exit(0);
     Client clt = client_create_tcp(addr, 1344);
-    memcpy(clt->host, argv[1], strlen(argv[1]) + 1);
+    if (!tmp)
+        memcpy(clt->host, argv[1], strlen(argv[1]) + 1);
+    else
+        memcpy(clt->host, host, strlen(host) + 1);
     printf("(%s)\n", clt->host);
-
-    *(--addr) = '\0';
-    char *username = argv[1];
-    printf("(%s)\n", username);
 
     int c_arg = 0;
     int i;
