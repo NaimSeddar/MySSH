@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         }
         buffer = strchr(argv[1], '@') + 1;
 
-        memcpy(addr, buffer, strlen(buffer));
+        memcpy(addr, buffer, strlen(buffer)+1);
 
         *(--buffer) = '\0';
         memcpy(username, argv[1], strlen(argv[1]) + 1);
