@@ -69,7 +69,7 @@ myssh-server.o: $(SRCDIR)myssh-server.c $(INCDIR)myssh-server.h
 
 
 myssh: error.o myssh.o myssh_main.o 
-	$(CC) $(CFLAGS) -o $@ $(BINDIR)myssh.o $(BINDIR)myssh_main.o $(BINDIR)error.o
+	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(BINDIR)myssh.o $(BINDIR)myssh_main.o 
 
 mysshd: error.o $(MYSH_R) myssh-server.o mysshd.o
 	$(CC) $(CFLAGS) -o $@ $(BINDIR)error.o $(MYSH_O) $(BINDIR)myssh-server.o $(BINDIR)mysshd.o -lcrypt

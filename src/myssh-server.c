@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 11:28:09
+ * Dernière modification: 30/12/2020 12:12:21
  * Master 1 Informatique
  */
 
@@ -16,7 +16,7 @@ ssize_t server_receive_tcp(struct server *this, void *data, size_t size)
 {
     ssize_t res = recv(this->socket, data, size, 0);
 
-    if (res == -1)
+    if (res == ERR)
     {
         server_destroy(this);
         exit(EXIT_FAILURE);
@@ -27,10 +27,10 @@ ssize_t server_receive_tcp(struct server *this, void *data, size_t size)
 
 void server_send_tcp(struct server *this, void *data, size_t data_size)
 {
-    if (send(this->socket, data, data_size, MSG_NOSIGNAL) == -1)
+    if (send(this->socket, data, data_size, MSG_NOSIGNAL) == ERR)
     {
         syserror(SEND_ERR);
-        exit(EXIT_SUCCESS);
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -94,7 +94,7 @@ struct auth_data_response check_credentials(char *username, char *clear_password
     size_t error_msg_len = strlen(error_msg);
     size_t error_msg_len2 = strlen(error_msg2);
 
-    if (setuid(0) == -1)
+    if (setuid(0) == ERR)
     {
         perror("Permissions issues (setuid)");
         exit(EXIT_FAILURE);
@@ -141,8 +141,7 @@ void authenticate_client(struct server *this)
     struct auth_data p;
     struct auth_data_response r;
 
-    // if ((n = recv(s, &p, sizeof(struct auth_data), 0)) == -1)
-    if ((n = this->server_receive(this, &p, sizeof(struct auth_data))) == -1)
+    if ((n = this->server_receive(this, &p, sizeof(struct auth_data))) == ERR)
     {
         perror("recv");
         exit(EXIT_FAILURE);

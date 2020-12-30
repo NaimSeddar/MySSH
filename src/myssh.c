@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 29/12/2020 20:56:53
+ * Dernière modification: 30/12/2020 12:22:39
  * Master 1 Informatique
  */
 
@@ -9,8 +9,6 @@
 #include "../includes/error.h"
 #include "../includes/data_struct.h"
 #include "../includes/colors.h"
-
-#define neterr_client(clt, n) client_destroy(clt), syserror(n);
 
 ssize_t client_receive_tcp(struct client *this, void *data, size_t size_data)
 {
@@ -59,8 +57,8 @@ void client_destroy(Client this)
 int getHost(char *hostname, char *addr, char *name, char *fullhost)
 {
     const char *config = "/.myssh/config";
-    char buffer[1024];
-    char host[1024];
+    char buffer[SIZE];
+    char host[SIZE];
     char *tmp;
     int in_config = 0;
     int len;
@@ -78,7 +76,7 @@ int getHost(char *hostname, char *addr, char *name, char *fullhost)
         return 0;
     }
 
-    while (fgets(buffer, 1024, f))
+    while (fgets(buffer, SIZE, f))
     {
         if ((tmp = strstr(buffer, host)))
         {
@@ -90,12 +88,12 @@ int getHost(char *hostname, char *addr, char *name, char *fullhost)
 
             in_config++;
 
-            if (fgets(buffer, 1024, f))
+            if (fgets(buffer, SIZE, f))
             {
                 sscanf(buffer, "\tHostname %s ", addr);
             }
 
-            if (fgets(buffer, 1024, f))
+            if (fgets(buffer, SIZE, f))
             {
                 sscanf(buffer, "\tUser %s ", name);
             }
@@ -164,7 +162,7 @@ void authenticate_to_server(Client this, char *username)
 
     this->client_send(this, &p, sizeof(struct auth_data));
 
-    if ((n = this->client_receive(this, &r, SIZEOF_AUTH_R)) == -1)
+    if ((n = this->client_receive(this, &r, SIZEOF_AUTH_R)) == ERR)
     {
         perror("recv");
         exit(EXIT_FAILURE);

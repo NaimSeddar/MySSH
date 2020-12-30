@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:47
- * Dernière modification: 29/12/2020 20:53:33
+ * Dernière modification: 30/12/2020 12:22:07
  * Master 1 Informatique
  */
 
@@ -24,6 +24,8 @@
 #include <unistd.h>
 
 #define SIZE 1024
+
+#define neterr_client(clt, n) client_destroy(clt), syserror(n);
 
 struct client
 {

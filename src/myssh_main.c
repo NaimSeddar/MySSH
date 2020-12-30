@@ -1,12 +1,13 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 11:19:50
+ * Dernière modification: 30/12/2020 12:14:14
  * Master 1 Informatique
  */
 
 #include "../includes/myssh.h"
 #include "../includes/data_struct.h"
+#include "../includes/error.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,8 +47,7 @@ int main(int argc, char *argv[])
     else
         memcpy(clt->host, host, strlen(host) + 1);
 
-    
-    if (connect(clt->socket, (const struct sockaddr *)&clt->clientAddr, clt->len) == -1)
+    if (connect(clt->socket, (const struct sockaddr *)&clt->clientAddr, clt->len) == ERR)
     {
         perror("connect");
         exit(1);

@@ -1,21 +1,20 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              01/12/2020 18:17:34
- * Dernière modification: 22/12/2020 12:10:10
+ * Dernière modification: 30/12/2020 12:16:38
  * Master 1 Informatique
  */
 #include <signal.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include "../includes/myssh-server.h"
+#include "../includes/error.h"
 
 int sockets[SOMAXCONN];
 
 void signal_callback_handler(int signum)
 {
-    // printf("SIGNAL RECEPTIONNE (child: ) \n");
     waitpid(-1, NULL, WNOHANG);
-    wait(NULL);
 }
 
 int main()
@@ -27,29 +26,16 @@ int main()
     Server daemon = server_create_tcp();
     daemon->server_bind(daemon, 1344);
 
-    if (listen(daemon->socket, SOMAXCONN) == -1)
+    if (listen(daemon->socket, SOMAXCONN) == ERR)
     {
         exit(EXIT_FAILURE);
     }
-
-    // int devnull = open("/dev/null", O_WRONLY);
-    // if (devnull == -1)
-    // {
-    //     perror("Failure /dev/null");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // dup2(devnull, fileno(stdout));
-    // dup2(devnull, fileno(stderr));
-
-    // printf("Daemon à l'écoute...\n");
 
     for (;;)
     {
         pid_t pid;
         int t = i;
         sockets[i] = accept(daemon->socket, (struct sockaddr *)&daemon->clientAddr, &daemon->len);
-        // printf("Accepted client %d\n", sockets[i]);
 
         if ((pid = fork()) == 0)
         {
@@ -60,15 +46,13 @@ int main()
             exit(EXIT_SUCCESS);
         }
 
-        if (waitpid(-1, &status, WNOHANG) == -1)
+        if (waitpid(-1, &status, WNOHANG) == ERR)
         {
             perror("wait");
         }
 
         i++;
     }
-
-    // close(devnull);
 
     server_destroy(daemon);
 
