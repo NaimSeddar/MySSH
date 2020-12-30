@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              16/11/2020 12:04:13
- * Dernière modification: 20/12/2020 12:27:37
+ * Dernière modification: 30/12/2020 12:54:18
  * Master 1 Informatique
  */
 
@@ -11,19 +11,14 @@
 /*
  * commande >> fichier
  * flags:
- *  >>  O_CREAT | O_WRONLY | O_APPEND
- *  >   O_CREAT | O_WRONLY | O_TRUNC
+ *  >>  O_CREAT | O_WRONLY | O_APPEND (1089)
+ *  >   O_CREAT | O_WRONLY | O_TRUNC  (577)
  */
+
 int stdout_to_fic(char *command, int flags)
 {
-    /*
-     * Flags: 
-     *      577  if O_TRUNC 
-     *      1089 if O_APPEND 
-     */
-
-    printf("stdout to fic (%s & %d)\n", command, flags);
     const char *type = (flags == 577 ? ">" : ">>");
+
     if (occu(command, type) > 1)
         return 1;
 
@@ -60,13 +55,8 @@ int stdout_to_fic(char *command, int flags)
 
 int stderr_to_fic(char *command, int flags)
 {
-    /*
-     * Flags: 
-     *      577  if O_TRUNC 
-     *      1089 if O_APPEND 
-     */
-    printf("stderr to fic (%s & %d)\n", command, flags);
     const char *type = (flags == 577 ? "2>" : "2>>");
+
     if (occu(command, type) > 1)
         return 1;
 
@@ -103,7 +93,6 @@ int stderr_to_fic(char *command, int flags)
 
 int stderr_and_stdout(char *command, int flags)
 {
-
     const char *type = (flags == 577 ? ">&" : ">>&");
     if (occu(command, type) > 1)
         return 1;
@@ -133,6 +122,7 @@ int stderr_and_stdout(char *command, int flags)
 
     fflush(stdout);
     close(out);
+
     fflush(stderr);
     close(err);
 
@@ -147,8 +137,6 @@ int stderr_and_stdout(char *command, int flags)
 
 int fic_to_stdin(char *command)
 {
-    printf("fic to stdin (%s & %d)\n", command, O_RDONLY);
-
     if (occu(command, "<") > 1)
         return 1;
 
@@ -174,10 +162,11 @@ int fic_to_stdin(char *command)
     res = systemV2(elt[0]);
 
     fflush(stdin);
+
     close(in);
+
     dup2(save_in, fileno(stdin));
     close(save_in);
-    // close(save_in);
 
     return res;
 }
