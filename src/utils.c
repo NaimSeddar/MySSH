@@ -1,15 +1,12 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              09/11/2020 13:34:02
- * Dernière modification: 20/12/2020 12:27:54
+ * Dernière modification: 30/12/2020 12:29:59
  * Master 1 Informatique
  */
 
 #include "../includes/utils.h"
 
-/*
- * Better strtok
- */
 char **str_split(char *str, const char delimiter)
 {
     char **result = 0;
@@ -20,7 +17,6 @@ char **str_split(char *str, const char delimiter)
     delim[0] = delimiter;
     delim[1] = 0;
 
-    /* Count how many elements will be extracted. */
     while (*tmp)
     {
         if (delimiter == *tmp)
@@ -31,11 +27,8 @@ char **str_split(char *str, const char delimiter)
         tmp++;
     }
 
-    /* Add space for trailing token. */
     count += last_comma < (str + strlen(str) - 1);
 
-    /* Add space for terminating null string so caller
-       knows where the list of returned strings ends. */
     count++;
 
     result = malloc(sizeof(char *) * count);
@@ -54,8 +47,7 @@ char **str_split(char *str, const char delimiter)
         }
         *(result + idx) = NULL;
     }
-    // free(str);
-    // free(tmp);
+
     return result;
 }
 
@@ -107,7 +99,7 @@ char **str_splitv2(char *str, const char *delimiter)
         result[i] = malloc(sizeof(char) * len_str);
         strncpy(result[0], str, len_str);
     }
-    // free(str);
+
     return result;
 }
 
@@ -123,9 +115,6 @@ void remove_whitespaces(char *str)
     } while ((*str++ = *d++));
 }
 
-/*
- * File into string
- */
 char *file_to_string(char *filename)
 {
     int f = open(filename, O_RDONLY);
