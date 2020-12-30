@@ -223,9 +223,6 @@ void print_socket(Client this)
             break;
         }
     }
-
-    // clearerr(stdout);
-    // fflush(stdout);
 }
 
 void oneshotcmd(Client this, char *command)
@@ -262,7 +259,6 @@ void command_loop(Client this)
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
-    printf("%s<<%d> <%d> <%s>>%s\n", RED_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
 
     for (;;)
     {
