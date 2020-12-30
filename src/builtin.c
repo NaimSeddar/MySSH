@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              21/11/2020 12:13:21
- * Dernière modification: 29/12/2020 18:14:05
+ * Dernière modification: 30/12/2020 11:55:09
  * Master 1 Informatique
  */
 
@@ -34,7 +34,6 @@ int mybg(char *var)
         }
 
         pid = jobs[job].pid;
-        // jobs[job].etat = "Stoppé";
 
         kill(pid, SIGTTIN);
         kill(pid, SIGCONT);

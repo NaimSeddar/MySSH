@@ -1,14 +1,14 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 26/12/2020 23:25:42
+ * Dernière modification: 30/12/2020 11:20:24
  * Master 1 Informatique
  */
 #ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
 #endif
-#ifndef UDP_SERVER_H
-#define UDP_SERVER_H
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <zconf.h>
 #include <sys/types.h>

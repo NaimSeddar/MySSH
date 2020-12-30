@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 29/12/2020 20:42:53
+ * Dernière modification: 30/12/2020 11:28:09
  * Master 1 Informatique
  */
 
@@ -202,9 +202,6 @@ void oneshotexec(Server this, char *command)
     printf("Code de retour : %d (%d)\n", ch_r.pcode, ch_r.ssh_answer);
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
-
-    // clearerr(stderr);
-    // clearerr(stdout);
 }
 
 void exit_process(Server this)
