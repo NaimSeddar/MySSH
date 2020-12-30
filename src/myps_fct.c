@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              28/10/2020 11:20:34
- * Dernière modification: 28/12/2020 21:25:24
+ * Dernière modification: 30/12/2020 15:11:24
  * Master 1 Informatique
  */
 
@@ -51,8 +51,8 @@ void getcmd(char *pid, proc *p)
     sprintf(filename, "/proc/%s/cmdline", pid);
     int f = open(filename, O_RDONLY);
 
-    // La commande et ses arguments sont séparés par '\0'
-    // On doit donc parcourir la chaine manuellement
+    /* Command and args are split by a '\0'
+       So we have to parse the string manually */
     while (read(f, &c, 1) > 0)
     {
         cmd[i] = (c == '\0' ? ' ' : c);
