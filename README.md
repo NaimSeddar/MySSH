@@ -86,8 +86,9 @@ Rarement, le resultat de la commande ne s'affiche pas.
 L'ajout d'ACK et de do-while pour recevoir m'ont aidé à diminuer le nombre de problèmes aléatoires.
 
 L'affichage du myps via myssh bug, je n'ai pas su trouver la raison de ce bug.  
-Toutefois, je n'ai detecté aucun bug sur myps avec son exécutable ou via mysh.
+Toutefois, je n'ai detecté aucun bug sur myps avec son exécutable ou via mysh.  
 
+Il y a aussi des bugs d'affichage dans mysh lorsqu'une comme ls est lancé en background.  
 
 ## 4. La petite blague
 Alors... J'ai pas les meilleurs blagues, mais j'ai de bons memes.  
