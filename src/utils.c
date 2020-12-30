@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              09/11/2020 13:34:02
- * Dernière modification: 30/12/2020 12:29:59
+ * Dernière modification: 30/12/2020 17:32:47
  * Master 1 Informatique
  */
 
@@ -80,14 +80,16 @@ char **str_splitv2(char *str, const char *delimiter)
     if (count > 0)
     {
         result = malloc(sizeof(char *) * (count + 2));
+
         while ((buf = strstr(str, delimiter)) != NULL)
         {
             len = buf - str;
             result[i] = malloc(sizeof(char) * len);
-            strncpy(result[i], str, len);
+            strncpy(result[i], str, len - 1);
             str += len + len_del;
             i++;
         }
+
         len = len_str - strlen(str);
         result[i] = malloc(sizeof(char) * len);
         strcpy(result[i], str);

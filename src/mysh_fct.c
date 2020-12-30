@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 30/12/2020 16:47:47
+ * Dernière modification: 30/12/2020 17:15:05
  * Master 1 Informatique
  */
 
@@ -241,6 +241,7 @@ int parser(char *command)
 
     for (int i = 0; *(commands + i); i++)
     {
+        printf("(%s)\n", *(commands + i));
 
         /* Check if there's a || */
         if (strstr(*(commands + i), "||") != NULL)
@@ -294,6 +295,7 @@ int parser(char *command)
         }
         else
         {
+            printf("Exec -> (%s)\n", *(commands + i));
             res = systemV2(*(commands + i));
         }
     }
@@ -433,7 +435,7 @@ void mysh()
 
         printprompt(pcode);
 
-        buffer = malloc(BUFFER_SIZE * sizeof(char));
+        buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
         memset(buffer, '\0', BUFFER_SIZE);
 
         if (read(STDIN_FILENO, buffer, 1024) == ERR)
