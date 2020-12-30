@@ -1,15 +1,24 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              25/10/2020 11:54:59
- * Dernière modification: 20/12/2020 12:26:19
+ * Dernière modification: 30/12/2020 15:08:41
  * Master 1 Informatique
  */
 
 #include "../includes/myls.h"
 
 char *perms[] = {
-    "---", "--x", "-w-", "-wx",
-    "r--", "r-x", "rw-", "rwx"};
+
+    "---",
+    "--x",
+    "-w-",
+    "-wx",
+    "r--",
+    "r-x",
+    "rw-",
+    "rwx"
+
+};
 
 const char *userperms(mode_t m)
 {
@@ -77,13 +86,12 @@ void print_dirHeader(char *dir)
 void print_perms(struct stat s)
 {
     mode_t m = s.st_mode;
-    // permissions
+
     printf("%c%s%s%s %ld", dirType(m), userperms(m), grpperms(m), otherperms(m), s.st_nlink);
 }
 
 void print_date(struct stat s)
 {
-    // date
     printf(" %7ld %.12s ", s.st_size, ctime(&s.st_mtime) + 4);
 }
 
@@ -125,7 +133,9 @@ void ls(char *path, int a, int r)
 
     if (n == ERR)
     {
-        perror("scandir");
+        lstat(fpath, &fileInfo);
+        print_line(fileInfo, path);
+
         return;
     }
 
@@ -137,21 +147,23 @@ void ls(char *path, int a, int r)
         }
 
         strcpy(fpath, path);
+
         if (fpath[strlen(fpath) - 1] != '/')
         {
             strncat(fpath, "/", 2);
         }
+
         strcat(fpath, files[i]->d_name);
         lstat(fpath, &fileInfo);
         print_line(fileInfo, files[i]->d_name);
+
         if (S_ISDIR(fileInfo.st_mode) && r && ((a && i > 1) || !a))
         {
-            // printf(BLUE_C "%s\n" RESET_C, files[i]->d_name);
             dir[nb_dir] = (char *)malloc(sizeof(fpath));
             strcpy(dir[nb_dir], fpath);
             nb_dir++;
-            // dir[nb_dir++] = fpath;
         }
+
         free(files[i]);
     }
 
@@ -162,6 +174,7 @@ void ls(char *path, int a, int r)
         printf("\n");
         print_dirHeader(dir[i]);
         ls(dir[i], a, r);
+
         free(dir[i]);
     }
 }
@@ -177,7 +190,7 @@ int myls(char **paths)
     {
         for (int i = 0; paths[i]; i++)
         {
-            printf("paths %d -> %s\n", i, paths[i]);
+
             if (paths[i][0] == '-')
             {
                 if (strchr(paths[i], 'a') != NULL)
