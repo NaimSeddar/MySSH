@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 12:12:21
+ * Dernière modification: 30/12/2020 16:24:45
  * Master 1 Informatique
  */
 
@@ -34,7 +34,7 @@ void server_send_tcp(struct server *this, void *data, size_t data_size)
     }
 }
 
-static void server_bind(struct server *this, int port)
+void server_bind(struct server *this, int port)
 {
     this->servAddr.sin_family = AF_INET;
     this->servAddr.sin_addr.s_addr = INADDR_ANY;
@@ -227,12 +227,11 @@ void exec_loop(Server this)
     {
         memset(ch.command, '\0', 4096);
         ch.ssh_request = 0;
-        printf("%sJ'attend un commande de la part du client\n", RED_C);
+
         do
         {
             this->server_receive(this, &ch, SIZEOF_CH_D);
-        } while (ch.ssh_request == 0);
-        printf("%sLe client veut exec un : (%s)\n", GREEN_C, ch.command);
+        } while (ch.ssh_request != SSH_MSG_CHANNEL_REQUEST);
 
         if (ch.command[0] == '\0')
             continue;

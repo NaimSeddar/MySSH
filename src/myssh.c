@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 12:22:39
+ * Dernière modification: 30/12/2020 16:22:26
  * Master 1 Informatique
  */
 
@@ -297,18 +297,18 @@ void command_loop(Client this)
             exit(EXIT_SUCCESS);
         }
 
-        // printf("%sDébut lecture socket\n%s", RED_C, RESET_C);
         print_socket(this);
-        // printf("%sSocket lu :ok_hand:\n", GREEN_C);
 
         // sleep(1);
 
         this->client_send(this, &ack, sizeof(int));
 
+        // printf("%sAttends reponse\n%s", RED_C, RESET_C);
         do
         {
             this->client_receive(this, &ch_r, SIZEOF_CH_R);
         } while (ch_r.ssh_answer != SSH_MSG_CHANNEL_SUCCESS && ch_r.ssh_answer != SSH_MSG_CHANNEL_FAILURE);
+        // printf("%sReponse recu :ok_hand:\n", GREEN_C);
 
         // print_pcode(ch_r.pcode);
         printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
