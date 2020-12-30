@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 30/12/2020 14:25:51
+ * Dernière modification: 30/12/2020 14:36:20
  * Master 1 Informatique
  */
 
@@ -12,12 +12,15 @@
 #include "../includes/mysh.h"
 
 pid_t cmd_pid = -1;
-int pcode = 0;
-struct myjob jobs[256];
-int nb_jobs = 0;
-char prev_cmd[4096];
 pid_t prev_fg_proc = -1;
+
+int pcode = 0;
+int nb_jobs = 0;
 int prev_pcode = -1;
+
+char prev_cmd[4096];
+
+struct myjob jobs[256];
 
 void ctrlc(int sig)
 {
