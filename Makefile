@@ -12,9 +12,8 @@ MYSH_H  = $(TOOLS_H) $(INCDIR)redirections.h $(INCDIR)myls.h $(INCDIR)myps.h $(I
 MYSH_O  = $(TOOLS_O) $(BINDIR)redirections.o $(BINDIR)myls_fct.o $(BINDIR)myps_fct.o $(BINDIR)builtin.o $(BINDIR)mysh_fct.o
 MYSH_R  = $(TOOLS_R) redirections.o myls_fct.o myps_fct.o builtin.o mysh_fct.o 
 
-.PHONY: all res
-all: myps myls mysh
-res: myssh myssh-server mysshd
+.PHONY: all 
+all: myps myls mysh myssh myssh-server mysshd
 
 utils.o: $(SRCDIR)utils.c $(INCDIR)utils.h
 	$(CC) $(CFLAGS) -c -o $(BINDIR)$@ $<

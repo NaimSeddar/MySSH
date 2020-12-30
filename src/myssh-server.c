@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 16:24:45
+ * Dernière modification: 30/12/2020 17:48:40
  * Master 1 Informatique
  */
 
@@ -149,7 +149,6 @@ void authenticate_client(struct server *this)
 
     r = check_credentials(p.user_name, p.specific_method_fields);
 
-    // server_send_tcp(s, &r, sizeof(struct auth_data_response));
     this->server_send(this, &r, sizeof(struct auth_data_response));
 
     if (r.ssh_answer == SSH_MSG_USERAUTH_FAILURE)
@@ -157,8 +156,6 @@ void authenticate_client(struct server *this)
         server_destroy(this);
         exit(EXIT_FAILURE);
     }
-
-    // sleep(1);
 }
 
 int remote_exec(Server this, char *command)
@@ -175,8 +172,8 @@ int remote_exec(Server this, char *command)
 
     printf("%c", '\0');
 
-    fflush(stderr);
     fflush(stdout);
+    fflush(stderr);
     clearerr(stdout);
     clearerr(stderr);
 
@@ -197,8 +194,6 @@ void oneshotexec(Server this, char *command)
 
     ch_r.ssh_answer = (n == 0 ? SSH_MSG_CHANNEL_SUCCESS : SSH_MSG_CHANNEL_FAILURE);
     ch_r.pcode = n;
-
-    printf("Code de retour : %d (%d)\n", ch_r.pcode, ch_r.ssh_answer);
 
     this->server_send(this, &ch_r, SIZEOF_CH_R);
 }
@@ -241,9 +236,7 @@ void exec_loop(Server this)
             exit_process(this);
         }
 
-        printf("%sJe lance l'exec\n", RED_C);
         n = remote_exec(this, ch.command);
-        printf("%sExecution terminé\n", GREEN_C);
 
         do
         {
@@ -256,9 +249,7 @@ void exec_loop(Server this)
         ch_r.pcode = n;
         getcwd(ch_r.comment, 4095);
 
-        printf("%sJ'vais envoyer le truc\n", RED_C);
         this->server_send(this, &ch_r, SIZEOF_CH_R);
-        printf("%sJ'ai envoyé le truc hein (%d %d %s)\n", GREEN_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
     }
 }
 
@@ -267,14 +258,16 @@ void getChannel(Server this)
     struct channel_data ch_d;
     int size;
 
-    this->server_receive(this, &ch_d, SIZEOF_CH_D);
+    do
+    {
+        this->server_receive(this, &ch_d, SIZEOF_CH_D);
+    } while (ch_d.ssh_request != SSH_MSG_CHANNEL_REQUEST);
+
     size = strlen(ch_d.service_name);
-    printf("(%s)\n", ch_d.command);
     fflush(stdout);
 
     if (strncmp("exec", ch_d.service_name, size) == 0)
     {
-        printf("One shot\n");
         oneshotexec(this, ch_d.command);
     }
     else if (strncmp("shell", ch_d.service_name, size) == 0)

@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              16/11/2020 12:04:13
- * Dernière modification: 30/12/2020 17:24:16
+ * Dernière modification: 30/12/2020 17:52:42
  * Master 1 Informatique
  */
 
@@ -26,7 +26,7 @@ int stdout_to_fic(char *command, int flags)
     int out, save_out, res;
 
     remove_whitespaces(elt[1]);
-    printf("open : %s\n", elt[1]);
+
     /* - rw- r-- r-- */
     if ((out = open(elt[1], flags, 0644)) < 0)
     {
@@ -42,7 +42,6 @@ int stdout_to_fic(char *command, int flags)
         return 1;
     }
 
-    printf("res : %s\n", elt[0]);
     res = parser(elt[0]);
 
     fflush(stdout);

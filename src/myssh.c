@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/11/2020 14:50:43
- * Dernière modification: 30/12/2020 16:22:26
+ * Dernière modification: 30/12/2020 17:49:36
  * Master 1 Informatique
  */
 
@@ -72,7 +72,6 @@ int getHost(char *hostname, char *addr, char *name, char *fullhost)
     FILE *f = fopen(buffer, "r");
     if (f == NULL)
     {
-        printf("Pas de fichier config :shrugging:\n");
         return 0;
     }
 
@@ -225,8 +224,8 @@ void print_socket(Client this)
         }
     }
 
-    clearerr(stdout);
-    fflush(stdout);
+    // clearerr(stdout);
+    // fflush(stdout);
 }
 
 void oneshotcmd(Client this, char *command)
@@ -242,15 +241,11 @@ void oneshotcmd(Client this, char *command)
 
     this->client_send(this, &ch_d, SIZEOF_CH_D);
 
-    // sleep(1);
     print_socket(this);
 
     this->client_receive(this, &ch_r, SIZEOF_CH_R);
 
-    // sleep(1);
-
     print_pcode(ch_r.pcode);
-    // printf("%d %d %s", ch_r.ssh_answer, ch_r.pcode, ch_r.comment);
 }
 
 void command_loop(Client this)
@@ -271,8 +266,6 @@ void command_loop(Client this)
 
     for (;;)
     {
-        // sleep(1);
-        // printf("%s", ch_r.comment);
         prompt_client(this, ch_r.comment);
         getstdin(buffer, NULL);
         if (strlen(buffer) == 0)
@@ -284,9 +277,7 @@ void command_loop(Client this)
         else
             memcpy(ch_d.command, buffer, strlen(buffer) + 1);
 
-        // printf("%sJ'envoi une commande au serveur\n", RED_C);
         this->client_send(this, &ch_d, SIZEOF_CH_D);
-        // printf("%sCommande (%s) envoyé%s\n", GREEN_C, ch_d.command, RESET_C);
 
         memset(buffer, '\0', SIZE);
 
@@ -299,19 +290,15 @@ void command_loop(Client this)
 
         print_socket(this);
 
-        // sleep(1);
-
         this->client_send(this, &ack, sizeof(int));
 
-        // printf("%sAttends reponse\n%s", RED_C, RESET_C);
         do
         {
             this->client_receive(this, &ch_r, SIZEOF_CH_R);
         } while (ch_r.ssh_answer != SSH_MSG_CHANNEL_SUCCESS && ch_r.ssh_answer != SSH_MSG_CHANNEL_FAILURE);
-        // printf("%sReponse recu :ok_hand:\n", GREEN_C);
 
-        // print_pcode(ch_r.pcode);
-        printf("%s<<%d> <%d> <%s>>%s\n", YELLOW_C, ch_r.ssh_answer, ch_r.pcode, ch_r.comment, RESET_C);
+        print_pcode(ch_r.pcode);
+
         ch_r.ssh_answer = 0;
     }
 }
