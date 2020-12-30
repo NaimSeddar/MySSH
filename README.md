@@ -5,15 +5,15 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
 ### Obtenir tout les exécutables
     make all
 ### Remarque  
-    Lors de la compilation, le droit de root sera demandé afin de pouvoir appliquer les droits nécessaires à myssh-server
+Lors de la compilation, le droit de root sera demandé afin de pouvoir appliquer les droits nécessaires à myssh-server
 ### La partie réseau  
-    Afin de pouvoir utiliser myssh, il faut que mysshd soit en cours :
-      ./mysshd &
-    Ensuite :
-      ./myssh [Hostname]
-    myssh-server sera automatiquement exécuté via mysshd.
+Afin de pouvoir utiliser myssh, il faut que mysshd soit en cours :
+  ./mysshd &
+Ensuite :
+  ./myssh [Hostname]
+myssh-server sera automatiquement exécuté via mysshd.
 ### La partie système
-    Chaque exécutable de cette partie peut être utilisé de manière conventionnelle.
+Chaque exécutable de cette partie peut être utilisé de manière conventionnelle.
 
 ## 1. Part de travail en %
     100% SEDDAR NaÏm
