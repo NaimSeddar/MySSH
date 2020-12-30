@@ -3,15 +3,19 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
 
 ## Utilisation  
 ### Obtenir tout les exécutables
-    make all
+    make all  
+    
 ### Remarque  
-Lors de la compilation, le droit de root sera demandé afin de pouvoir appliquer les droits nécessaires à myssh-server
+Lors de la compilation, le droit de root sera demandé afin de pouvoir appliquer les droits nécessaires à myssh-server.  
+Ce projet à été réalisé et testé sous le sous système Ubuntu sur Windows 10.  
+
 ### La partie réseau  
 Afin de pouvoir utiliser myssh, il faut que mysshd soit en cours :
   ./mysshd &
 Ensuite :
   ./myssh [Hostname]
-myssh-server sera automatiquement exécuté via mysshd.
+myssh-server sera automatiquement exécuté via mysshd.  
+
 ### La partie système
 Chaque exécutable de cette partie peut être utilisé de manière conventionnelle.
 
