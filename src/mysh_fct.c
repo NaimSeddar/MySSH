@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 30/12/2020 14:36:20
+ * Dernière modification: 30/12/2020 16:47:47
  * Master 1 Informatique
  */
 
@@ -219,7 +219,7 @@ int systemV2(char *command)
         jobs[nb_jobs].pid = cmd_pid;
         jobs[nb_jobs].etat = "En cours d'exécution";
         memcpy(jobs[nb_jobs].command, command, strlen(command) + 1);
-        printf("[%d] %d %s %s", jobs[nb_jobs].job_id, jobs[nb_jobs].pid, jobs[nb_jobs].etat, jobs[nb_jobs].command);
+        printf("[%d] %d %s %s\n", jobs[nb_jobs].job_id, jobs[nb_jobs].pid, jobs[nb_jobs].etat, jobs[nb_jobs].command);
         nb_jobs++;
     }
 

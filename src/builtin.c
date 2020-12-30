@@ -1,7 +1,7 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              21/11/2020 12:13:21
- * Dernière modification: 30/12/2020 11:55:09
+ * Dernière modification: 30/12/2020 16:54:55
  * Master 1 Informatique
  */
 
@@ -15,7 +15,7 @@ int mybg(char *var)
 {
 
     int job = -1;
-    pid_t pid;
+    pid_t pid = -1;
 
     if (var != NULL)
     {
@@ -60,7 +60,6 @@ int mybg(char *var)
             printf("%d %s\n", jobs[i].show, jobs[i].command);
             if (jobs[i].show == 1)
             {
-                // job = jobs[i].job_id;
                 pid = jobs[i].pid;
                 break;
             }
