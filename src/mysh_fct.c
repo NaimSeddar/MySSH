@@ -1,17 +1,26 @@
 /**
  * Auteur:                Seddar Naïm
  * Création:              24/10/2020 20:59:37
- * Dernière modification: 29/12/2020 19:11:10
+ * Dernière modification: 30/12/2020 14:25:51
  * Master 1 Informatique
  */
 
+#ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
+#endif
+
 #include "../includes/mysh.h"
+
+pid_t cmd_pid = -1;
+int pcode = 0;
+struct myjob jobs[256];
+int nb_jobs = 0;
+char prev_cmd[4096];
+pid_t prev_fg_proc = -1;
+int prev_pcode = -1;
 
 void ctrlc(int sig)
 {
-    // printf("pid to kill : %d (from %d) %d\n", getpid(), getppid(), cmd_pid);
-
     if (cmd_pid == -1)
     {
         char resp = '\0';
@@ -62,14 +71,6 @@ void ctrlz(int sig)
     }
 }
 
-pid_t cmd_pid = -1;
-int pcode = 0;
-struct myjob jobs[256];
-int nb_jobs = 0;
-char prev_cmd[4096];
-pid_t prev_fg_proc = -1;
-int prev_pcode = -1;
-
 void check_jobs()
 {
     int status;
@@ -83,7 +84,7 @@ void check_jobs()
         if (jobs[i].show)
         {
             p = waitpid(jobs[i].pid, &status, WNOHANG);
-            // printf("status: %d (%d)\n", status, p);
+
             if (p == -1)
                 jobs[i].show = 0;
         }
@@ -104,11 +105,6 @@ int run_it_in_bg(char **fields)
     return 0;
 }
 
-/**
- * A better system() saw in class.
- * A lighter version based on execvp. 
- * @param command
- * */
 int systemV2(char *command)
 {
     int status;
@@ -239,67 +235,62 @@ int parser(char *command)
 {
     int res;
     char **commands = str_split(command, ';');
-    // printf("Entrer parser (%s)\n", *commands);
+
     for (int i = 0; *(commands + i); i++)
     {
-        // printf("blabla haut\n");
-        // printf("Loop parser (%d : %s)\n", i, *(commands + i));
 
-        /* Check if there's a pipe*/
+        /* Check if there's a || */
         if (strstr(*(commands + i), "||") != NULL)
         {
-            printf("Lance un OU sur: (%s)\n", *(commands + i));
             res = or_op(*(commands + i));
         }
+        /* Check if there's a && */
         else if (strstr(*(commands + i), "&&") != NULL)
         {
-            // printf("Lance un ET sur: (%s)\n", *(commands + i));
             res = and_op(*(commands + i));
         }
-        /* Check if there's a pipe*/
-        else if (strchr(*(commands + i), '|') != NULL)
-        {
-            printf("Lance pipeline sur: (%s)\n", *(commands + i));
-            res = pipeline(*(commands + i));
-        }
+        /* Check if there's a 2>> */
         else if (strstr(*(commands + i), "2>>") != NULL)
         {
-            printf("Redirection 2>> sur: (%s)\n", *(commands + i));
             res = stderr_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
         }
+        /* Check if there's a 2> */
         else if (strstr(*(commands + i), "2>") != NULL)
         {
-            printf("Redirection 2> sur: (%s)\n", *(commands + i));
             res = stderr_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
+        /* Check if there's a >>& */
         else if (strstr(*(commands + i), ">>&") != NULL)
         {
-            printf("Redirection >>& sur: (%s)\n", *(commands + i));
             res = stderr_and_stdout(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
         }
+        /* Check if there's a >> */
         else if (strstr(*(commands + i), ">>") != NULL)
         {
-            printf("Redirection >> sur: (%s)\n", *(commands + i));
             res = stdout_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_APPEND);
         }
+        /* Check if there's a >& */
         else if (strstr(*(commands + i), ">&") != NULL)
         {
-            printf("Redirection >& sur: (%s)\n", *(commands + i));
             res = stderr_and_stdout(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
+        /* Check if there's a > */
         else if (strstr(*(commands + i), ">") != NULL)
         {
-            printf("Redirection > sur: (%s)\n", *(commands + i));
             res = stdout_to_fic(*(commands + i), O_CREAT | O_WRONLY | O_TRUNC);
         }
+        /* Check if there's a < */
         else if (strstr(*(commands + i), "<") != NULL)
         {
-            printf("Redirection < sur: (%s)\n", *(commands + i));
             res = fic_to_stdin(*(commands + i));
+        }
+        /* Check if there's a pipe */
+        else if (strchr(*(commands + i), '|') != NULL)
+        {
+            res = pipeline(*(commands + i));
         }
         else
         {
-            printf("Lance exec sur: (%s)\n", *(commands + i));
             res = systemV2(*(commands + i));
         }
     }
@@ -314,13 +305,11 @@ int and_op(char *command)
 
     for (int i = 0; *(buffer + i); i++)
     {
-        printf("Handle this (%s)\n", *(buffer + i));
         res = parser(*(buffer + i));
+
         if (res)
             return res;
-        // free(buffer + i);
     }
-    // free(buffer);
 
     return res;
 }
@@ -332,13 +321,11 @@ int or_op(char *command)
 
     for (int i = 0; *(buffer + i); i++)
     {
-        printf("Handle this (%s)\n", *(buffer + i));
         res = parser(*(buffer + i));
+
         if (!res)
             return res;
-        // free(buffer + i);
     }
-    // free(buffer);
 
     return res;
 }
@@ -355,6 +342,7 @@ int pipeline(char *command)
     while (cmds[i])
     {
         pipe(p);
+
         if ((pid = fork()) == -1)
         {
             exit(1);
@@ -362,10 +350,11 @@ int pipeline(char *command)
         else if (pid == 0)
         {
             dup2(fd_in, 0);
+
             if (cmds[i + 1])
                 dup2(p[1], 1);
+
             close(p[0]);
-            printf("exec in pipe: %s\n", cmds[i]);
             exit(parser(cmds[i]));
         }
         else
@@ -395,8 +384,6 @@ void search_replace_var(char **commands)
         if (*(commands + i)[0] == '$')
         {
             *(commands + i) = getenv(++(*(commands + i)));
-            // fflush(stdout);
-            printf("var: %s\n", getenv("USER"));
         }
     }
 }
@@ -418,12 +405,11 @@ void printprompt(int pcode)
     currpath[len + 1] = ' ';
     currpath[len + 2] = '\0';
 
-    // username = getpwuid(getuid())->pw_name;
     username = getenv("USER");
 
     if (username != NULL)
     {
-        printf(YELLOW_C "[%d]" U_RED_C "%s:" RESET_C, pcode, username);
+        printf(U_RED_C "%s:" RESET_C, username);
     }
 
     printf(GREEN_C "%s" RESET_C, currpath);
@@ -450,7 +436,7 @@ void mysh()
         if (read(STDIN_FILENO, buffer, 1024) == ERR)
             perror("Read"), exit(2);
 
-        // replace '\n' by '\0'
+        /* replace '\n' by '\0' */
         buffer[strlen(buffer) - 1] = '\0';
 
         memcpy(prev_cmd, buffer, strlen(buffer));
