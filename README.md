@@ -1,7 +1,24 @@
 # Projet MySSH
 Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
 
-## Executables
+## Utilisation  
+### Obtenir tout les exécutables
+    make all
+### Remarque  
+    Lors de la compilation, le droit de root sera demandé afin de pouvoir appliquer les droits nécessaires à myssh-server
+### La partie réseau  
+    Afin de pouvoir utiliser myssh, il faut que mysshd soit en cours :
+      ./mysshd &
+    Ensuite :
+      ./myssh [Hostname]
+    myssh-server sera automatiquement exécuté via mysshd.
+### La partie système
+    Chaque exécutable de cette partie peut être utilisé de manière conventionnelle.
+
+## 1. Part de travail en %
+    100% SEDDAR NaÏm
+
+## 2. Executables
 ## *mysh*  
 ### Fonctionnalités :
     [x] Petit prompt sympa
@@ -60,3 +77,21 @@ Projet de *Réseau* et *Système* pour le semestre 1 du Master Informatique.
     [x] Fichier config dans le dossier $HOME/.myssh
     [ ] Envp en mémoire partagé
     [ ] Signaux
+
+Par manque de temps, je n'ai pas pu implémenter le envp en mémoire partagée et le transfert de signaux du client vers le serveur.
+
+## 3. Bugs
+Lors de mes tests sur la partie réseau, j'ai eu, de manière aléatoire, des problèmes de synchronisation entre le client et serveur. Ce faisant, le serveur attendait une commande du client pendant que le client attendait la réponse du serveur.  
+Rarement, le resultat de la commande ne s'affiche pas. 
+L'ajout d'ACK et de do-while pour recevoir m'ont aidé à diminuer le nombre de problèmes aléatoires.
+
+L'affichage du myps via myssh bug, je n'ai pas su trouver la raison de ce bug.  
+Toutefois, je n'ai detecté aucun bug sur myps avec son exécutable ou via mysh.
+
+
+## 4. La petite blague
+Alors... J'ai pas les meilleurs blagues, mais j'ai de bons memes.  
+https://twitter.com/c0dehard/status/1327718161848872960?s=20  
+Ça me fais plaisir d'enfin pouvoir le montrer à quelqu'un qui puisse le comprendre.
+
+Bonne année !  
